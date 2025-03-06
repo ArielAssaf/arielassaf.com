@@ -12,13 +12,16 @@ ShowBreadCrumbs = true
 ShowCodeCopyButtons = true
 hidePoweredBy = true
 
-[params.homeInfoParams]
-Title = 'Welcome to my blog'
-Content = 'This is my personal website where I share my thoughts and experiences.'
+[params.footer]
+powered = false
+authored = false
+copyright = false
 
-[[params.socialIcons]]
-name = "github"
-url = "https://github.com/arielassaf"
+[params.assets]
+disableHLJS = true
+
+[params.label]
+text = ""
 
 [menu]
 [[menu.main]]

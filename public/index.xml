@@ -26,13 +26,5 @@
       <description>&lt;p&gt;Hi, I&amp;rsquo;m Ariel! Welcome to my personal website.&lt;/p&gt;
 &lt;p&gt;This is where I share my thoughts, experiences, and insights. Feel free to explore my posts and get in touch if you&amp;rsquo;d like to connect.&lt;/p&gt;</description>
     </item>
-    <item>
-      <title>Welcome to My Blog</title>
-      <link>http://localhost:1313/posts/welcome/</link>
-      <pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/welcome/</guid>
-      <description>&lt;p&gt;Welcome to my new blog! To be honest, I&amp;rsquo;m a little surprised someone is reading this.&lt;/p&gt;
-&lt;p&gt;Stay tuned for more content coming soon!&lt;/p&gt;</description>
-    </item>
   </channel>
 </rss>

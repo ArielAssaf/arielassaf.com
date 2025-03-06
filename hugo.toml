@@ -1,4 +1,4 @@
-baseURL = 'https://arielassaf.com/'
+baseURL = '/'
 languageCode = 'en-us'
 title = 'Ariel Assaf'
 theme = 'PaperMod'

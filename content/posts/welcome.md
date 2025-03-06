@@ -1,10 +1,9 @@
 ---
 title: "Welcome to My Blog"
 date: "2025-03-06"
-draft: false
-tags: ["personal", "introduction"]
+draft: true
 ---
 
-Welcome to my new blog! This is my first post on my personal website. I've set up this space using Hugo and the beautiful PaperMod theme to share my thoughts and experiences.
+Welcome to my new blog! To be honest, I'm a little surprised someone is reading this.
 
 Stay tuned for more content coming soon!

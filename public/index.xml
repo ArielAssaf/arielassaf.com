@@ -1,54 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-  <channel>
-    <title>Ariel Assaf</title>
-    <link>http://localhost:1313/</link>
-    <description>Recent content on Ariel Assaf</description>
-    <generator>Hugo -- 0.145.0</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 06 Mar 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>About Me</title>
-      <link>http://localhost:1313/about/</link>
-      <pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/about/</guid>
-      <description>&lt;p&gt;Hi, I&amp;rsquo;m Ariel! Welcome to my personal website.&lt;/p&gt;
-&lt;p&gt;This is where I share my thoughts, experiences, and insights. Feel free to explore my posts and get in touch if you&amp;rsquo;d like to connect.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Setting Up DNS for GitHub Pages</title>
-      <link>http://localhost:1313/posts/dns-and-github-pages/</link>
-      <pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/dns-and-github-pages/</guid>
-      <description>&lt;p&gt;Today I set up my personal website using GitHub Pages with a custom domain. Here&amp;rsquo;s what I learned about configuring DNS records properly:&lt;/p&gt;
-&lt;h2 id=&#34;required-dns-records&#34;&gt;Required DNS Records&lt;/h2&gt;
-&lt;p&gt;To point your custom domain to GitHub Pages, you need to configure these DNS records:&lt;/p&gt;
-&lt;h3 id=&#34;a-records&#34;&gt;A Records&lt;/h3&gt;
-&lt;p&gt;You need four A records pointing to GitHub&amp;rsquo;s IP addresses:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;185.199.108.153
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>Ariel Assaf</title><link>https://arielassaf.com/</link><description>Recent content on Ariel Assaf</description><generator>Hugo -- 0.145.0</generator><language>en-us</language><lastBuildDate>Thu, 06 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://arielassaf.com/index.xml" rel="self" type="application/rss+xml"/><item><title>About Me</title><link>https://arielassaf.com/about/</link><pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate><guid>https://arielassaf.com/about/</guid><description>&lt;p>Hi, I&amp;rsquo;m Ariel! Welcome to my personal website.&lt;/p>
+&lt;p>This is where I share my thoughts, experiences, and insights. Feel free to explore my posts and get in touch if you&amp;rsquo;d like to connect.&lt;/p></description></item><item><title>Setting Up DNS for GitHub Pages</title><link>https://arielassaf.com/posts/move_37_how_far_will_we_trust_ai/</link><pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate><guid>https://arielassaf.com/posts/move_37_how_far_will_we_trust_ai/</guid><description>&lt;p>Today I set up my personal website using GitHub Pages with a custom domain. Here&amp;rsquo;s what I learned about configuring DNS records properly:&lt;/p>
+&lt;h2 id="required-dns-records">Required DNS Records&lt;/h2>
+&lt;p>To point your custom domain to GitHub Pages, you need to configure these DNS records:&lt;/p>
+&lt;h3 id="a-records">A Records&lt;/h3>
+&lt;p>You need four A records pointing to GitHub&amp;rsquo;s IP addresses:&lt;/p>
+&lt;pre tabindex="0">&lt;code>185.199.108.153
 185.199.109.153
 185.199.110.153
 185.199.111.153
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;cname-record&#34;&gt;CNAME Record&lt;/h3&gt;
-&lt;p&gt;For the www subdomain, add a CNAME record:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;www -&amp;gt; yourusername.github.io
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;tips-for-dns-configuration&#34;&gt;Tips for DNS Configuration&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;Remove any conflicting DNS records&lt;/li&gt;
-&lt;li&gt;Be patient - DNS changes can take up to 24 hours to propagate&lt;/li&gt;
-&lt;li&gt;Use tools like &lt;a href=&#34;https://dnschecker.org&#34;&gt;dnschecker.org&lt;/a&gt; to verify your DNS settings&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;github-pages-setup&#34;&gt;GitHub Pages Setup&lt;/h2&gt;
-&lt;p&gt;In your repository settings:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Welcome to My Blog</title>
-      <link>http://localhost:1313/posts/welcome/</link>
-      <pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/welcome/</guid>
-      <description>&lt;p&gt;Welcome to my new blog! This is my first post on my personal website. I&amp;rsquo;ve set up this space using Hugo and the beautiful PaperMod theme to share my thoughts and experiences.&lt;/p&gt;
-&lt;p&gt;Stay tuned for more content coming soon!&lt;/p&gt;</description>
-    </item>
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>&lt;h3 id="cname-record">CNAME Record&lt;/h3>
+&lt;p>For the www subdomain, add a CNAME record:&lt;/p>
+&lt;pre tabindex="0">&lt;code>www -&amp;gt; yourusername.github.io
+&lt;/code>&lt;/pre>&lt;h2 id="tips-for-dns-configuration">Tips for DNS Configuration&lt;/h2>
+&lt;ol>
+&lt;li>Remove any conflicting DNS records&lt;/li>
+&lt;li>Be patient - DNS changes can take up to 24 hours to propagate&lt;/li>
+&lt;li>Use tools like &lt;a href="https://dnschecker.org">dnschecker.org&lt;/a> to verify your DNS settings&lt;/li>
+&lt;/ol>
+&lt;h2 id="github-pages-setup">GitHub Pages Setup&lt;/h2>
+&lt;p>In your repository settings:&lt;/p></description></item><item><title>Welcome to My Blog</title><link>https://arielassaf.com/posts/welcome/</link><pubDate>Thu, 06 Mar 2025 00:00:00 +0000</pubDate><guid>https://arielassaf.com/posts/welcome/</guid><description>&lt;p>Welcome to my new blog! This is my first post on my personal website. I&amp;rsquo;ve set up this space using Hugo and the beautiful PaperMod theme to share my thoughts and experiences.&lt;/p>
+&lt;p>Stay tuned for more content coming soon!&lt;/p></description></item></channel></rss>

@@ -3,9 +3,6 @@ title: "It's an Alien Intelligence: Stop Comparing It to a Child"
 date: 2025-03-15T12:00:00Z
 draft: false
 ---
-
-## It's an Alien Intelligence: Stop Comparing It to a Child
-
 We're obsessed with measuring AI against human children—as if that's some gold standard for intelligence. It's like judging a spaceship by how well it floats. Completely absurd.
 
 LLMs aren't children. They're not growing up, going to school, or worrying about acne. They aren't mini-humans waiting to mature. They're something altogether stranger, an **alien intelligence**, shaped by **statistical patterns** instead of evolution, neurons, playground drama, and awkward teenage sex.

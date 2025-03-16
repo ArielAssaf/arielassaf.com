@@ -1,6 +1,6 @@
 baseURL = 'https://arielassaf.com/'
 languageCode = 'en-us'
-title = 'Ariel Assaf'
+title = 'Random thoughts'
 theme = 'PaperMod'
 
 [params]

@@ -12,6 +12,26 @@ ShowBreadCrumbs = true
 ShowCodeCopyButtons = true
 hidePoweredBy = true
 
+# Social icons configuration - keeping it minimal with just the accounts you want
+[[params.socialIcons]]
+name = "github"
+url = "https://github.com/ArielAssaf"
+
+[[params.socialIcons]]
+name = "linkedin"
+url = "https://linkedin.com/in/arielassaf"
+
+# Disable profile mode to prevent duplicate social icons
+[params.profileMode]
+enabled = false
+
+# Home info params
+[params.homeInfoParams]
+Title = "Random thoughts"
+Content = "This is where I share some random thoughts, experiences, and insights."
+# Disable additional social icons on homepage
+disableSpecingSocial = true
+
 [params.footer]
 powered = false
 authored = false

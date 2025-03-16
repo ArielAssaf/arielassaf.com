@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Random thoughts</title>
-    <link>http://localhost:4389/posts/</link>
+    <link>https://arielassaf.com/posts/</link>
     <description>Recent content in Posts on Random thoughts</description>
     <generator>Hugo -- 0.145.0</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 16 Mar 2025 12:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:4389/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://arielassaf.com/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>It&#39;s an Alien Intelligence: Stop Comparing It to a Child</title>
-      <link>http://localhost:4389/posts/alien_intelligence/</link>
+      <link>https://arielassaf.com/posts/alien_intelligence/</link>
       <pubDate>Sun, 16 Mar 2025 12:00:00 +0000</pubDate>
-      <guid>http://localhost:4389/posts/alien_intelligence/</guid>
+      <guid>https://arielassaf.com/posts/alien_intelligence/</guid>
       <description>AI isn&amp;#39;t a child waiting to grow up—it&amp;#39;s something stranger, an alien intelligence shaped by patterns rather than human experiences.</description>
     </item>
     <item>
       <title>Move 37: How Far Will We Trust AI?</title>
-      <link>http://localhost:4389/posts/move_37_how_far_will_we_trust_ai/</link>
+      <link>https://arielassaf.com/posts/move_37_how_far_will_we_trust_ai/</link>
       <pubDate>Thu, 06 Mar 2025 12:00:00 +0000</pubDate>
-      <guid>http://localhost:4389/posts/move_37_how_far_will_we_trust_ai/</guid>
+      <guid>https://arielassaf.com/posts/move_37_how_far_will_we_trust_ai/</guid>
       <description>&lt;p&gt;Here is another attempt to think about AI more than a few weeks into the future.&lt;/p&gt;
 &lt;p&gt;I started thinking about this after reading &lt;em&gt;The MANIAC&lt;/em&gt; by Benjamín Labatut. He reminded me of a story Edward Teller once told about John von Neumann. Teller—a scientific giant of the century in his own right—recalled:&lt;/p&gt;
 &lt;blockquote&gt;

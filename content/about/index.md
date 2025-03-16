@@ -2,6 +2,7 @@
 title: "About Me"
 date: "2025-03-06"
 draft: false
+disableShare: true
 ---
 
 Hi,

@@ -6,11 +6,13 @@ draft: false
 
 Here is another attempt to think about AI more than a few weeks into the future.
 
-I started thinking about this after reading *The MANIAC* by Benjamín Labatut. He reminded me of a story Edward Teller once told about John von Neumann. Teller—a scientific giant of the century in his own right—recalled:
+I started thinking about this after reading The MANIAC by Benjamín Labatut. In case you’re unfamiliar, John von Neumann was the man behind an astonishingly long list of contributions to humanity, including game theory and the modern computer. If I had met him and we disagreed, I would assume that he knew more, considered more, and analyzed it better than I did—that I was only seeing part of the picture.
+
+The book reminded me of a story Edward Teller once told about von Neumann. Teller, a scientific giant of the century in his own right, recalled:
 
 > "Von Neumann would carry on a conversation with my 3-year-old son, and the two of them would talk as equals, and I sometimes wondered if he used the same principle when he talked to the rest of us."
 
-Von Neumann went on to advise the highest levels of government, especially on defense. In many ways, he helped shape the Cold War—a conflict that brought the world to the brink of destruction, yet had no casualties. Would you have had the nerve to ignore his advice if you didn't understand it?
+Von Neumann went on to advise the highest levels of government, especially on defense. In many ways, he helped shape the Cold War—a conflict that brought the world to the brink of destruction, yet had no casualties. If I had met him, and we disagreed, I would assume that he knew more, concidered more, analyzed it better than me. It would be clear to me that I only saw part of teh picture. Would you have had the nerve to ignore his advice if you didn't understand it?
 
 In many ways, we already put a surprising amount of trust in AI without thinking twice. It suggests the next word when we’re typing, sorts our emails, edits our photos, determines our creditworthiness, sets insurance premiums, steers our cars, diagnoses medical conditions, filters job applications, and more. And most of the time, we don’t question it.
 

@@ -4,5 +4,3 @@ description: "Personal blog and thoughts"
 ---
 
 Welcome to my new blog! To be honest, I'm a little surprised someone is reading this.
-
-Stay tuned for more content coming soon!

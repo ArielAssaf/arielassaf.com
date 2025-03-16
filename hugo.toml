@@ -25,12 +25,11 @@ url = "https://linkedin.com/in/arielassaf"
 [params.profileMode]
 enabled = false
 
-# Home info params
-[params.homeInfoParams]
-Title = ""
-Content = ""
-# Disable additional social icons on homepage
-disableSpecingSocial = true
+# Home info params removed - no longer showing the article box on homepage
+# [params.homeInfoParams]
+# Title = ""
+# Content = ""
+# disableSpecingSocial = true
 
 [params.footer]
 powered = false

@@ -11,6 +11,7 @@ ShowPostNavLinks = true
 ShowBreadCrumbs = true
 ShowCodeCopyButtons = true
 hidePoweredBy = true
+comments = true # Enable comments globally
 
 # Social icons configuration - keeping it minimal with just the accounts you want
 [[params.socialIcons]]

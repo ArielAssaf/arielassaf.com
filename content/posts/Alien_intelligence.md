@@ -2,9 +2,6 @@
 title: "It's an Alien Intelligence: Stop Comparing It to a Child"
 date: 2025-03-15T12:00:00Z
 draft: false
-description: "AI isn't a child waiting to grow up—it's something stranger, an alien intelligence shaped by patterns rather than human experiences."
-tags: ["AI", "LLMs", "Intelligence", "Technology"]
-categories: ["Artificial Intelligence"]
 ---
 
 ## It's an Alien Intelligence: Stop Comparing It to a Child

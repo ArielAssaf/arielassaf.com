@@ -2,23 +2,26 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:4997/</loc>
+    <loc>https://arielassaf.com/</loc>
+    <lastmod>2025-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://arielassaf.com/posts/</loc>
+    <lastmod>2025-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://arielassaf.com/posts/rate-of-progress-1/</loc>
+    <lastmod>2025-03-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://arielassaf.com/posts/alien_intelligence/</loc>
     <lastmod>2025-03-15T12:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:4997/posts/alien_intelligence/</loc>
-    <lastmod>2025-03-15T12:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:4997/posts/</loc>
-    <lastmod>2025-03-15T12:00:00+00:00</lastmod>
-  </url><url>
-    <loc>http://localhost:4997/posts/move_37_how_far_will_we_trust_ai/</loc>
+    <loc>https://arielassaf.com/posts/move_37_how_far_will_we_trust_ai/</loc>
     <lastmod>2025-03-06T12:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:4997/about/</loc>
+    <loc>https://arielassaf.com/about/</loc>
     <lastmod>2025-03-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:4997/categories/</loc>
+    <loc>https://arielassaf.com/categories/</loc>
   </url><url>
-    <loc>http://localhost:4997/tags/</loc>
+    <loc>https://arielassaf.com/tags/</loc>
   </url>
 </urlset>

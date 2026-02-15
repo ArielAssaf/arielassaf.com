@@ -4,7 +4,6 @@ date: 2026-02-15T12:00:00Z
 draft: false
 ---
 
-# The I by Reflection
 
 Shakespeare wrote "The eye sees not itself / But by reflection." It's one of his most profound observations—not just for the poetry, but for what it reveals about understanding itself.
 

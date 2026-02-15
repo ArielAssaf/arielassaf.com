@@ -1,0 +1,50 @@
+name: Build Substack Mirror Package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - content/posts/**
+      - scripts/substack_mirror.py
+      - .github/workflows/substack-mirror.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.145.0'
+          extended: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Build Substack mirror package
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            python scripts/substack_mirror.py --git-range "$BEFORE_SHA..$AFTER_SHA"
+          else
+            python scripts/substack_mirror.py
+          fi
+
+      - name: Upload mirror artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: substack-mirror-${{ github.sha }}
+          path: .mirror/substack/outbox

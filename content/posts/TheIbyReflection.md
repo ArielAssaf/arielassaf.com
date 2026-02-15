@@ -61,8 +61,6 @@ It might converge on competence without converging on us.
 
 Imagine a machine that navigates the physical world with perfect precision—it manages to manipulate the world around it to its benefit. But when you look inside, its logic treats cause-and-effect as a side note rather than the main event. It classifies the world into primitives that are completely alien to us.
 
-[SUGGESTION: Complete this thought—what does it remove or ignore? What specific alien primitives might it use?]
-
 We can't climb inside that machine's perspective. But we can measure the gap between its solutions and ours.
 
 When it succeeds where our intuitions predict failure, or fails where we feel certain—that's when the invisible walls of human thought finally come into focus.
@@ -82,3 +80,4 @@ We'll understand human intelligence not by how well it's mimicked, but by how it
 A distorted reflection is still a reflection.
 
 The eye may never see itself directly. But with a mirror that wasn't ground to fit the human face, we might finally learn our own shape.
+

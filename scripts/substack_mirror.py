@@ -68,9 +68,54 @@ def changed_paths(git_range: str) -> set[str]:
 
 
 def strip_frontmatter(markdown: str) -> str:
+    markdown = markdown.lstrip("\ufeff")
     match = re.match(r"\A---\s*\r?\n.*?\r?\n---\s*\r?\n", markdown, flags=re.DOTALL)
     body = markdown[match.end() :] if match else markdown
     return body.lstrip("\r\n")
+
+
+def _convert_inline_markdown(text: str) -> str:
+    text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"\*(.*?)\*", r"<em>\1</em>", text)
+    text = re.sub(r"_(.*?)_", r"<em>\1</em>", text)
+    return text
+
+
+def to_substack_html(markdown: str) -> str:
+    text = markdown
+    # Remove editorial notes meant for drafting only.
+    text = re.sub(r"^\[SUGGESTION:.*?\]\s*$", "", text, flags=re.MULTILINE)
+    lines = text.splitlines()
+    blocks: list[str] = []
+    paragraph_lines: list[str] = []
+
+    def flush_paragraph() -> None:
+        if not paragraph_lines:
+            return
+        paragraph = " ".join(line.strip() for line in paragraph_lines if line.strip())
+        if paragraph:
+            blocks.append(f"<p>{_convert_inline_markdown(paragraph)}</p>")
+        paragraph_lines.clear()
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            flush_paragraph()
+            continue
+        if re.fullmatch(r"-{3,}", stripped):
+            flush_paragraph()
+            continue
+        heading_match = re.match(r"^(#{1,6})\s+(.*)$", stripped)
+        if heading_match:
+            flush_paragraph()
+            level = len(heading_match.group(1))
+            heading_text = _convert_inline_markdown(heading_match.group(2).strip())
+            blocks.append(f"<h{level}>{heading_text}</h{level}>")
+            continue
+        paragraph_lines.append(stripped)
+
+    flush_paragraph()
+    return "\n\n".join(blocks).strip()
 
 
 def slug_from_permalink(permalink: str) -> str:
@@ -91,12 +136,32 @@ def git_remote_http_url() -> str:
 
 def build_payload(post: Post, source_body: str, canonical_repo_url: str) -> str:
     source_link = f"{canonical_repo_url}/blob/main/{post.path}"
+    html_body = to_substack_html(source_body)
     return (
-        f"# {post.title}\n\n"
-        f"> Canonical URL: {post.permalink}\n"
-        f"> Canonical source (GitHub): {source_link}\n\n"
-        f"---\n\n"
-        f"{source_body.rstrip()}\n"
+        f"<p>Canonical URL: <a href=\"{post.permalink}\">{post.permalink}</a></p>\n"
+        f"<p>Canonical source (GitHub): <a href=\"{source_link}\">{source_link}</a></p>\n\n"
+        f"{html_body}\n"
+    )
+
+
+def wrap_html_document(title: str, body_html: str) -> str:
+    return (
+        "<!doctype html>\n"
+        "<html lang=\"en\">\n"
+        "<head>\n"
+        "  <meta charset=\"utf-8\" />\n"
+        f"  <title>{title}</title>\n"
+        "  <style>\n"
+        "    body { max-width: 760px; margin: 40px auto; font-family: Georgia, 'Times New Roman', serif; line-height: 1.65; font-size: 22px; color: #111; padding: 0 20px; }\n"
+        "    h1, h2, h3, h4, h5, h6 { line-height: 1.25; margin-top: 1.5em; margin-bottom: 0.5em; }\n"
+        "    p { margin: 0 0 1em; }\n"
+        "    a { color: #0b57d0; }\n"
+        "  </style>\n"
+        "</head>\n"
+        "<body>\n"
+        f"{body_html}\n"
+        "</body>\n"
+        "</html>\n"
     )
 
 
@@ -154,12 +219,18 @@ def main() -> int:
         source = Path(post.path)
         if not source.exists():
             continue
-        raw = source.read_text(encoding="utf-8")
+        raw = source.read_text(encoding="utf-8-sig")
         body = strip_frontmatter(raw)
         slug = slug_from_permalink(post.permalink)
+        payload = build_payload(post, body, canonical_repo_url)
         output_file = output_dir / f"{slug}.md"
         output_file.write_text(
-            build_payload(post, body, canonical_repo_url),
+            payload,
+            encoding="utf-8",
+        )
+        output_html_file = output_dir / f"{slug}.html"
+        output_html_file.write_text(
+            wrap_html_document(post.title, payload),
             encoding="utf-8",
         )
         manifest_posts.append(
@@ -170,6 +241,7 @@ def main() -> int:
                 "published_at": post.date,
                 "sha256": hash_text(body),
                 "output_file": normalize_path(str(output_file)),
+                "output_html_file": normalize_path(str(output_html_file)),
             }
         )
 

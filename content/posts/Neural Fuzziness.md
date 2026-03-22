@@ -1,6 +1,6 @@
 ---
 title: "Neural Fuzziness, Concepts, and the Epistemology of Logic"
-date: 2026-03-22T12:00:00Z
+date: 2026-03-22T09:00:00Z
 draft: false
 ---
 

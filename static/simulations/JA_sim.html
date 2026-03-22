@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Ensemble: Concept Consolidation</title>
+    <style>
+        :root {
+            --bg: #05050a;
+            --panel: #0d1117;
+            --accent: #58a6ff;
+            --ja-gold: #f2cc60;
+            --success: #3fb950;
+            --inhibit: #f85149;
+            --text: #c9d1d9;
+            --dim: #8b949e;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg); color: var(--text);
+            font-family: -apple-system, system-ui, sans-serif;
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        #sidebar {
+            width: 100%; min-width: auto; height: auto;
+            background: var(--panel); border-bottom: 1px solid #30363d; border-right: none;
+            display: flex; flex-direction: row; flex-wrap: wrap; padding: 15px; gap: 15px;
+            align-items: center; justify-content: space-between;
+            box-sizing: border-box; z-index: 10;
+        }
+
+        h1 { font-size: 1.1rem; color: #fff; margin: 0; }
+        .sub { font-size: 0.7rem; color: var(--dim); margin-bottom: 0; }
+
+        .header { flex: 0 1 auto; }
+
+        .stat-card {
+            background: rgba(255,255,255,0.03); padding: 10px 15px;
+            border-radius: 8px; border: 1px solid #30363d; margin-bottom: 0;
+            flex: 1 1 250px; display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .label { font-size: 0.65rem; color: var(--accent); text-transform: uppercase; font-weight: 800; }
+        .explainer { font-size: 0.7rem; color: var(--dim); line-height: 1.2; margin: 4px 0; }
+        .value { font-size: 1rem; font-weight: bold; font-family: monospace; color: var(--ja-gold); margin-top: 2px; }
+
+        .controls { margin-top: 0; display: flex; flex-direction: column; gap: 8px; flex: 1 1 200px; }
+        .control-box { background: #161b22; padding: 8px; border-radius: 6px; border: 1px solid #30363d; }
+        input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+        .btn-group { display: flex; gap: 8px; }
+        button {
+            flex: 1; padding: 8px; border: 1px solid #30363d; border-radius: 6px;
+            font-size: 0.8rem; font-weight: bold; cursor: pointer; background: #21262d; color: #c9d1d9;
+        }
+        button:hover { background: #30363d; }
+        #btn-play.active { background: #238636; color: #fff; }
+
+        #main-container { flex-grow: 1; position: relative; height: 100%; width: 100%; }
+        canvas { width: 100%; height: 100%; display: block; }
+
+        #focus-ring {
+            position: absolute; top: 50%; left: 20%;
+            transform: translate(-50%, -50%);
+            width: 160px; height: 160px;
+            background: #0d1117; border-radius: 50%;
+            border: 2px solid #30363d;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+        #stim-title { font-size: 13px; font-weight: bold; color: var(--dim); letter-spacing: 1px; margin-bottom: 6px; }
+        #stim-icon { font-size: 56px; }
+        #stim-label { font-size: 12px; margin-top: 6px; color: var(--accent); text-align: center; }
+
+        #popup {
+            position: absolute; background: var(--ja-gold); color: #000;
+            padding: 12px; border-radius: 8px; width: 200px;
+            font-size: 0.85rem; font-weight: 700; line-height: 1.3;
+            display: none; pointer-events: none; z-index: 100;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+        #popup::after {
+            content: ''; position: absolute; left: 100%; top: 50%;
+            margin-top: -8px; border-width: 8px; border-style: solid;
+            border-color: transparent transparent transparent var(--ja-gold);
+        }
+
+        #association-cloud { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+        .tag { font-size: 14px; background: #161b22; border: 1px solid var(--ja-gold); border-radius: 4px; padding: 1px 4px; }
+        .tooltip-icon { cursor: help; color: var(--dim); margin-left: 4px; }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <div class="header">
+        <h1>Concept Network</h1>
+    </div>
+
+    <div class="stat-card">
+        <div class="label">Concept Neuron</div>
+        <p class="explainer">Lateral inhibition forces a single neuron to specialize in related inputs. <span style="color:var(--inhibit)">Red lines</span> show the winning neuron suppressing others.</p>
+        <span id="assembly-status" class="value">Awaiting Stimulus...</span>
+        
+        <div style="margin-top: 10px;">
+            <div class="label" style="font-size: 0.6rem;">Neuron Specialization</div>
+            <div style="width: 100%; height: 6px; background: #21262d; border-radius: 3px; margin-top: 5px; overflow:hidden;">
+                <div id="bar-sel" style="width: 0%; height: 100%; background: var(--ja-gold); transition: width 0.3s;"></div>
+            </div>
+            <div id="val-sel-text" style="font-size: 0.7rem; text-align: right; margin-top: 3px; color: var(--ja-gold);">0%</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="label">Integrated Modalities</div>
+        <p class="explainer">Traits that frequently activate together bind to the same concept neuron.</p>
+        <div id="association-cloud"></div>
+    </div>
+
+    <div class="controls">
+        <div class="control-box">
+            <div class="label" style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>Speed</span>
+                <span id="speed-label" style="color: #fff;">1.0x</span>
+            </div>
+            <input type="range" id="speed-range" min="0.2" max="15" step="0.2" value="1">
+        </div>
+        <div class="btn-group">
+            <button id="btn-play">Auto-Train</button>
+            <button id="btn-step">Manual Step</button>
+        </div>
+    </div>
+</div>
+
+<div id="main-container">
+    <div id="focus-ring">
+        <div id="stim-title">STIMULUS</div>
+        <div id="stim-icon">🧠</div>
+        <div id="stim-label">STANDBY</div>
+    </div>
+    <div id="popup"></div>
+    <canvas id="viz"></canvas>
+</div>
+
+<script>
+/**
+ * WINNER-TAKE-ALL ENGINE
+ */
+const MODALITIES = [
+    { name: "Aniston Face", isJA: true, icon: "👩🏼" },
+    { name: "Haircut", isJA: true, icon: "💇‍♀️" },
+    { name: "Friends Theme", isJA: true, icon: "🎸" },
+    { name: "The Voice", isJA: true, icon: "🗣️" },
+    { name: "The Name", isJA: true, icon: "🖋️" },
+    { name: "Central Perk", isJA: true, icon: "☕" },
+    { icon: "🐕" }, { icon: "🍕" }, { icon: "🗼" }, { icon: "✈️" },
+    { icon: "🍌" }, { icon: "🤖" }, { icon: "🌙" }, { icon: "⚽" },
+    { icon: "🐈" }, { icon: "🌳" }
+];
+
+const HUB_SIZE = 12;
+const canvas = document.getElementById('viz');
+const ctx = canvas.getContext('2d');
+
+let weights = Array(HUB_SIZE).fill(0).map(() => 
+    Array(MODALITIES.length).fill(0).map(() => 0.05 + Math.random() * 0.1)
+);
+
+let neuronPos = [];
+
+const learningRate = 0.15;
+let activeIdx = -1;
+let currentWinner = -1;
+let jaConceptNeuron = -1;
+let bestJaScore = 0;
+
+let isPlaying = false;
+let speed = 1.0;
+let lastUpdate = 0;
+let isConsolidated = false;
+
+function resize() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    
+    // Generate organic brain-shaped layout (two hemispheres), scaled up for larger view
+    const hubCenterX = canvas.width * 0.75;
+    const hubCenterY = canvas.height / 2;
+    neuronPos = [];
+    for (let i = 0; i < HUB_SIZE; i++) {
+        let isLeftHemi = i % 2 === 0;
+        let angle = Math.random() * Math.PI * 2;
+        let radiusX = 60 + Math.random() * 60;
+        let radiusY = 100 + Math.random() * 80;
+        let cx = hubCenterX + (isLeftHemi ? -70 : 70);
+        
+        neuronPos.push({
+            x: cx + Math.cos(angle) * radiusX,
+            y: hubCenterY + Math.sin(angle) * radiusY
+        });
+    }
+    // Simple relaxation to prevent overlap with larger spacing
+    for (let step = 0; step < 20; step++) {
+        for (let i = 0; i < HUB_SIZE; i++) {
+            for (let j = i + 1; j < HUB_SIZE; j++) {
+                let dx = neuronPos[i].x - neuronPos[j].x;
+                let dy = neuronPos[i].y - neuronPos[j].y;
+                let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                if (dist < 80) { // Increased distance threshold
+                    neuronPos[i].x += (dx / dist) * 3;
+                    neuronPos[i].y += (dy / dist) * 3;
+                    neuronPos[j].x -= (dx / dist) * 3;
+                    neuronPos[j].y -= (dy / dist) * 3;
+                }
+            }
+        }
+    }
+}
+window.addEventListener('resize', resize);
+resize();
+
+function runStep() {
+    if (Math.random() < 0.6) {
+        activeIdx = Math.floor(Math.random() * 6);
+    } else {
+        activeIdx = Math.floor(Math.random() * (MODALITIES.length - 6)) + 6;
+    }
+    const stim = MODALITIES[activeIdx];
+
+    let maxActivation = -1;
+    currentWinner = -1;
+
+    for (let j = 0; j < HUB_SIZE; j++) {
+        let activation = weights[j][activeIdx];
+        // Add tiny noise to break initial random symmetry
+        activation += Math.random() * 0.01;
+        
+        if (activation > maxActivation) {
+            maxActivation = activation;
+            currentWinner = j;
+        }
+    }
+
+    // Targeted Hebbian Update with Environmental Co-occurrence
+    for (let i = 0; i < MODALITIES.length; i++) {
+        let targetVal = 0;
+        
+        if (i === activeIdx) {
+            targetVal = 1.0; // Primary stimulus
+        } else if (stim.isJA && MODALITIES[i].isJA) {
+            // Key Fix: Traits of a concept co-occur. 
+            // This shared correlation forces WTA to group them into ONE neuron.
+            targetVal = 0.85; 
+        }
+
+        if (targetVal > 0) {
+            // Winning neuron connects to the active input and its correlated traits
+            weights[currentWinner][i] += learningRate * (targetVal - weights[currentWinner][i]);
+        } else {
+            // Winning neuron slowly forgets inactive, unrelated inputs (Specialization)
+            weights[currentWinner][i] -= learningRate * 0.05;
+            if (weights[currentWinner][i] < 0) weights[currentWinner][i] = 0;
+        }
+    }
+    
+    // Slight decay for losing neurons to prevent deadlock
+    for (let j = 0; j < HUB_SIZE; j++) {
+        if (j !== currentWinner) {
+            weights[j][activeIdx] -= learningRate * 0.01;
+            if (weights[j][activeIdx] < 0) weights[j][activeIdx] = 0;
+        }
+    }
+
+    bestJaScore = 0;
+    jaConceptNeuron = -1;
+    
+    for (let j = 0; j < HUB_SIZE; j++) {
+        let jaScore = weights[j].slice(0, 6).reduce((a, b) => a + b, 0) / 6;
+        if (jaScore > bestJaScore) {
+            bestJaScore = jaScore;
+            jaConceptNeuron = j;
+        }
+    }
+
+    const selPercent = Math.min(100, Math.round(bestJaScore * 100));
+    document.getElementById('val-sel-text').innerText = selPercent + "%";
+    document.getElementById('bar-sel').style.width = selPercent + "%";
+    document.getElementById('stim-icon').innerText = stim.icon;
+    document.getElementById('stim-label').innerText = stim.isJA ? stim.name : "DISTRACTOR";
+    document.getElementById('assembly-status').innerText = selPercent > 60 ? `Neuron N${jaConceptNeuron + 1} Specialized!` : "Self-Organizing...";
+
+    const cloud = document.getElementById('association-cloud');
+    cloud.innerHTML = '';
+    if (jaConceptNeuron !== -1) {
+        MODALITIES.slice(0,6).forEach((m, idx) => {
+            if (weights[jaConceptNeuron][idx] > 0.4) {
+                const s = document.createElement('span'); s.className = 'tag'; s.innerText = m.icon; cloud.appendChild(s);
+            }
+        });
+    }
+
+    if (bestJaScore > 0.75 && !isConsolidated) {
+        isConsolidated = true;
+        const popup = document.getElementById('popup');
+        const rightX = canvas.width * 0.75 - 200; // Adjusted popup position relative to new hub center
+        popup.innerHTML = `<b>Concept Formed!</b><br>Neuron N${jaConceptNeuron + 1} has claimed the Jennifer Aniston concept via lateral inhibition.`;
+        popup.style.display = 'block';
+        popup.style.top = (canvas.height / 2 - 50) + "px";
+        popup.style.left = rightX + "px";
+    }
+}
+
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const focusX = canvas.width * 0.2; // Match CSS left position
+    const focusY = canvas.height / 2;
+
+    // Draw baseline network connections
+    for (let i = 0; i < HUB_SIZE; i++) {
+        for (let j = i + 1; j < HUB_SIZE; j++) {
+            ctx.beginPath();
+            ctx.moveTo(neuronPos[i].x, neuronPos[i].y);
+            ctx.lineTo(neuronPos[j].x, neuronPos[j].y);
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        }
+    }
+
+    // Draw active lateral inhibition (Competition)
+    if (activeIdx !== -1 && currentWinner !== -1) {
+        for (let i = 0; i < HUB_SIZE; i++) {
+            if (i !== currentWinner) {
+                ctx.beginPath();
+                ctx.moveTo(neuronPos[currentWinner].x, neuronPos[currentWinner].y);
+                ctx.lineTo(neuronPos[i].x, neuronPos[i].y);
+                ctx.strokeStyle = 'rgba(248, 81, 73, 0.5)'; // Red inhibitory signals
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            }
+        }
+    }
+
+    neuronPos.forEach((pos, i) => {
+        const isActive = (activeIdx !== -1) && (i === currentWinner);
+        
+        ctx.beginPath();
+        ctx.moveTo(focusX + 80, focusY); // Adjust start point based on larger ring
+        ctx.lineTo(pos.x, pos.y);
+        ctx.strokeStyle = isActive ? 'var(--success)' : 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = isActive ? 4 : 1.5;
+        ctx.stroke();
+
+        const isJaConcept = (i === jaConceptNeuron && bestJaScore > 0.4); 
+        
+        ctx.fillStyle = isJaConcept ? 'var(--ja-gold)' : (isActive ? 'var(--success)' : '#0d1117');
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, 25, 0, Math.PI*2); ctx.fill(); // Increased node size
+        ctx.strokeStyle = isJaConcept ? 'var(--ja-gold)' : '#30363d';
+        ctx.lineWidth = isJaConcept ? 3 : 2;
+        ctx.stroke();
+        
+        ctx.fillStyle = (isActive || isJaConcept) ? "#000" : "#8b949e";
+        ctx.font = "bold 13px monospace"; ctx.textAlign = "center"; // Increased font size
+        ctx.fillText("N" + (i+1), pos.x, pos.y + 4);
+    });
+
+    if (isPlaying && Date.now() - lastUpdate > (1000 / speed)) {
+        runStep();
+        lastUpdate = Date.now();
+    }
+    requestAnimationFrame(render);
+}
+
+document.getElementById('btn-play').onclick = (e) => {
+    isPlaying = !isPlaying;
+    e.target.innerText = isPlaying ? "Stop Training" : "Auto-Train";
+    e.target.classList.toggle('active', isPlaying);
+};
+document.getElementById('btn-step').onclick = runStep;
+document.getElementById('speed-range').oninput = (e) => {
+    speed = parseFloat(e.target.value);
+    document.getElementById('speed-label').innerText = speed.toFixed(1) + "x";
+};
+
+render();
+</script>
+</body>
+</html>

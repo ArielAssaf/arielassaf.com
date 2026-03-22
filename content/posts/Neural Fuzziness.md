@@ -4,8 +4,6 @@ date: 2026-03-22T09:00:00Z
 draft: false
 ---
 
-# Neural Fuzziness, Concepts, and the Epistemology of Logic
-
 ## 1. Introduction: The Physical Address of a Thought
 
 My interest in the intersection of neuroscience and philosophy started with a book about memory.
@@ -99,7 +97,7 @@ The network doesn't store each experience separately. It stores what the experie
 
 To make this concrete, here's a small simulation. Repeatedly train the same co-occurring features and watch their links strengthen under a simple Hebbian update rule.
 
-{{< simulation src="/simulations/hebbian-wiring.html" title="Hebbian wiring simulator" height="620" >}}
+{{< simulation src="/simulations/JA_sim.html" title="Hebbian wiring simulator" height="620" >}}
 
 #### The Landscape Intuition
 

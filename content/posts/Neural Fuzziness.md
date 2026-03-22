@@ -1,3 +1,9 @@
+---
+title: "Neural Fuzziness, Concepts, and the Epistemology of Logic"
+date: 2026-03-22T12:00:00Z
+draft: false
+---
+
 # Neural Fuzziness, Concepts, and the Epistemology of Logic
 
 ## 1. Introduction: The Physical Address of a Thought

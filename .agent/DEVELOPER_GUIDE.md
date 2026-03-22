@@ -3,6 +3,8 @@
 ## Local Workflow
 - Create or edit posts in `content/posts/*.md`.
 - Mark posts live with frontmatter `draft: false`.
+- For interactive simulations, place HTML files in `static/simulations/*.html` and embed with:
+  - `{{< simulation src="/simulations/<file>.html" title="..." height="620" >}}`
 - Validate build:
   - `hugo --minify --baseURL "https://arielassaf.com/"`
 - Generate Substack mirror package:

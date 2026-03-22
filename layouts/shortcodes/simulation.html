@@ -1,0 +1,12 @@
+{{- $src := .Get "src" -}}
+{{- $title := .Get "title" | default "Interactive simulation" -}}
+{{- $height := .Get "height" | default "560" -}}
+<figure style="margin: 1.75rem 0;">
+  <iframe
+    src="{{ $src | safeURL }}"
+    title="{{ $title }}"
+    loading="lazy"
+    style="width: 100%; height: {{ $height }}px; border: 1px solid var(--border); border-radius: 12px; background: transparent;"
+    allowfullscreen>
+  </iframe>
+</figure>

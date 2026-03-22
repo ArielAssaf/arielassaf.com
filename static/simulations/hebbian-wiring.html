@@ -1,0 +1,294 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hebbian Wiring Simulator</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --panel: #ffffff;
+      --text: #1a1f2b;
+      --muted: #5f6675;
+      --line: #cdd3df;
+      --active: #0f6fff;
+      --inactive: #d9deea;
+      --good: #16a34a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --panel: #131a24;
+        --text: #e7edf7;
+        --muted: #a6b0c2;
+        --line: #2a3548;
+        --active: #60a5fa;
+        --inactive: #334155;
+        --good: #4ade80;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 10%, rgba(15, 111, 255, 0.12), transparent 45%), var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    h1 {
+      font-size: 1rem;
+      margin: 0 0 8px;
+      letter-spacing: 0.02em;
+    }
+    p {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+    .patterns {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    button {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.88rem;
+    }
+    button:hover { border-color: var(--active); }
+    .stats {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--line);
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .stats b { color: var(--good); }
+    .stage {
+      min-height: 540px;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+    }
+    svg {
+      width: 100%;
+      min-height: 540px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 30%), var(--panel);
+      border: 1px solid var(--line);
+    }
+    .legend {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    @media (max-width: 860px) {
+      .wrap { grid-template-columns: 1fr; }
+      .stage { min-height: 500px; }
+      svg { min-height: 500px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="panel">
+      <h1>Hebbian Wiring (Toy Model)</h1>
+      <p>Press training examples repeatedly. Co-activated features strengthen their links.</p>
+      <p><em>Rule:</em> for each active pair, increase <code>w_ij</code> by 1.</p>
+
+      <div class="patterns">
+        <button id="p1">Train: Face + Name + Voice</button>
+        <button id="p2">Train: Face + Theme Song + Haircut</button>
+        <button id="p3">Train: Name + Voice + Theme Song</button>
+        <button id="noise">Train: Random Noisy Snapshot</button>
+        <button id="reset">Reset Weights</button>
+      </div>
+
+      <div class="stats" id="stats"></div>
+    </aside>
+
+    <section class="stage">
+      <svg id="viz" viewBox="0 0 700 540" preserveAspectRatio="xMidYMid meet" aria-label="Hebbian wiring network"></svg>
+    </section>
+  </div>
+
+  <script>
+    const labels = [
+      "Face",
+      "Name",
+      "Voice",
+      "Theme",
+      "Haircut",
+      "Coffee Cup",
+      "Eiffel Tower",
+      "Julia Roberts"
+    ];
+
+    const n = labels.length;
+    const W = Array.from({ length: n }, () => Array(n).fill(0));
+    let steps = 0;
+
+    const patterns = {
+      p1: [1, 1, 1, 0, 0, 0, 0, 0],
+      p2: [1, 0, 0, 1, 1, 0, 0, 0],
+      p3: [0, 1, 1, 1, 0, 0, 0, 0]
+    };
+
+    function train(x) {
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          if (x[i] && x[j]) {
+            W[i][j] += 1;
+            W[j][i] += 1;
+          }
+        }
+      }
+      steps += 1;
+      draw(x);
+    }
+
+    function randomPattern() {
+      const x = Array(n).fill(0);
+      for (let i = 0; i < n; i++) {
+        x[i] = Math.random() < 0.35 ? 1 : 0;
+      }
+      if (x.every(v => v === 0)) {
+        x[Math.floor(Math.random() * n)] = 1;
+      }
+      return x;
+    }
+
+    function reset() {
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          W[i][j] = 0;
+        }
+      }
+      steps = 0;
+      draw(Array(n).fill(0));
+    }
+
+    function summarize() {
+      let max = 0;
+      let maxPair = ["-", "-"];
+      let activeEdges = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          if (W[i][j] > 0) activeEdges += 1;
+          if (W[i][j] > max) {
+            max = W[i][j];
+            maxPair = [labels[i], labels[j]];
+          }
+        }
+      }
+      return { max, maxPair, activeEdges };
+    }
+
+    function draw(currentPattern) {
+      const svg = document.getElementById("viz");
+      svg.innerHTML = "";
+
+      const cx = 350;
+      const cy = 270;
+      const r = 200;
+      const nodes = [];
+
+      for (let i = 0; i < n; i++) {
+        const angle = (-Math.PI / 2) + (2 * Math.PI * i) / n;
+        nodes.push({
+          x: cx + r * Math.cos(angle),
+          y: cy + r * Math.sin(angle)
+        });
+      }
+
+      const maxW = Math.max(1, ...W.flat());
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const wij = W[i][j];
+          if (wij <= 0) continue;
+          const t = wij / maxW;
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", nodes[i].x);
+          line.setAttribute("y1", nodes[i].y);
+          line.setAttribute("x2", nodes[j].x);
+          line.setAttribute("y2", nodes[j].y);
+          line.setAttribute("stroke", `rgba(15,111,255,${0.18 + t * 0.75})`);
+          line.setAttribute("stroke-width", `${1 + t * 6}`);
+          line.setAttribute("stroke-linecap", "round");
+          svg.appendChild(line);
+        }
+      }
+
+      for (let i = 0; i < n; i++) {
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", nodes[i].x);
+        c.setAttribute("cy", nodes[i].y);
+        c.setAttribute("r", 26);
+        c.setAttribute("fill", currentPattern[i] ? "var(--active)" : "var(--inactive)");
+        c.setAttribute("stroke", "var(--line)");
+        c.setAttribute("stroke-width", "1.5");
+
+        const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("x", nodes[i].x);
+        t.setAttribute("y", nodes[i].y + 45);
+        t.setAttribute("text-anchor", "middle");
+        t.setAttribute("font-size", "14");
+        t.setAttribute("fill", "var(--text)");
+        t.textContent = labels[i];
+
+        g.appendChild(c);
+        g.appendChild(t);
+        svg.appendChild(g);
+      }
+
+      const s = summarize();
+      document.getElementById("stats").innerHTML =
+        `Training steps: <b>${steps}</b><br>` +
+        `Active links: <b>${s.activeEdges}</b><br>` +
+        `Strongest link: <b>${s.maxPair[0]} ↔ ${s.maxPair[1]}</b> (w=${s.max})`;
+    }
+
+    document.getElementById("p1").addEventListener("click", () => train(patterns.p1));
+    document.getElementById("p2").addEventListener("click", () => train(patterns.p2));
+    document.getElementById("p3").addEventListener("click", () => train(patterns.p3));
+    document.getElementById("noise").addEventListener("click", () => train(randomPattern()));
+    document.getElementById("reset").addEventListener("click", reset);
+
+    draw(Array(n).fill(0));
+  </script>
+</body>
+</html>

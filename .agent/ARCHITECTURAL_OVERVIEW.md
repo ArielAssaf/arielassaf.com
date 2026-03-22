@@ -4,6 +4,7 @@
 - Static site generator: Hugo (`hugo.toml`)
 - Theme: PaperMod (`themes/PaperMod` submodule)
 - Content source: Markdown files in `content/posts`
+- Interactive embeds: standalone HTML files in `static/simulations`, embedded from posts via `layouts/shortcodes/simulation.html`
 - Hosting/deploy: GitHub Pages via `.github/workflows/hugo.yml`
 
 ## Publishing Model

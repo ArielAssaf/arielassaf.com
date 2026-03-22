@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Attractor Landscape</title>
+    <style>
+        body { margin: 0; background: transparent; color: #eee; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        #embed-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Embed max width */
+            height: 500px;    /* Fixed embed height */
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+        #controls {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(15, 15, 20, 0.85);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            pointer-events: none; 
+            max-width: 250px;
+            backdrop-filter: blur(4px);
+        }
+        h1 { margin: 0 0 8px 0; font-size: 1rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        p { font-size: 0.8rem; margin-bottom: 6px; color: #aaa; line-height: 1.3; }
+        .instruction { color: #4ade80; font-weight: bold; }
+        button {
+            pointer-events: auto;
+            margin-top: 8px;
+            margin-right: 4px;
+            padding: 6px 10px;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            transition: background 0.2s;
+        }
+        button:hover { background: #333; border-color: #666; }
+        #heatBtn { color: #f87171; border-color: #7f1d1d; }
+        #heatBtn:hover { background: #450a0a; border-color: #ef4444; }
+
+        #toast-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast {
+            background: rgba(15, 15, 20, 0.95);
+            color: #4ade80;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            animation: fadeInOut 4s forwards;
+            backdrop-filter: blur(4px);
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="embed-container">
+        <div id="controls">
+            <h1>Attractor Landscape</h1>
+            
+            <div id="menu-controls">
+                <p>Observe how neural fuzziness creates conceptual boundaries.</p>
+                <button id="presetBtn">Start Preset Simulation</button>
+                <button id="freeplayBtn">Freeplay Mode</button>
+            </div>
+
+            <div id="sim-controls" style="display: none;">
+                <p>1. <span class="instruction">Click</span> to create / <span class="instruction">Drag</span> to move.</p>
+                <p>2. <b>Blue ridges</b> show the fuzzy boundary (saddle point) between concepts.</p>
+                <p>3. Use <b>Inject Noise</b> to push states over ridges.</p>
+                <button id="resetBtn">Back to Menu</button>
+                <button id="heatBtn">Inject Noise (Heat)</button>
+            </div>
+        </div>
+        <div id="toast-container"></div>
+        <canvas id="simCanvas"></canvas>
+    </div>
+
+    <script>
+        const container = document.getElementById('embed-container');
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        // Simulation parameters
+        const PARTICLE_COUNT = 400; // Reduced for smaller embed size
+        const FRICTION = 0.92; 
+        const GRAVITY_STRENGTH = 0.2;
+        const GRID_SPACING = 50; // Tighter grid for smaller canvas
+
+        let particles = [];
+        let attractors = [];
+        let conceptNames = ["Chair", "Couch", "Bed", "Table", "Desk", "Bench", "Stool", "Floor", "Rock", "Log"];
+        let conceptIndex = 0;
+        let draggedAttractor = null;
+        let reportedRidges = new Set();
+        let presetTimeouts = [];
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            container.innerHTML = ''; // Clear previous toasts to prevent stacking
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 4000);
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+                this.age = Math.random() * this.maxAge; // Stagger initial ages
+            }
+
+            reset() {
+                // Spawn at edges
+                if (Math.random() > 0.5) {
+                    this.x = Math.random() > 0.5 ? -10 : width + 10;
+                    this.y = Math.random() * height;
+                } else {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() > 0.5 ? -10 : height + 10;
+                }
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.history = [];
+                this.age = 0;
+                this.maxAge = 300 + Math.random() * 400;
+            }
+
+            update() {
+                this.age++;
+                if (this.age > this.maxAge) {
+                    this.reset();
+                    return;
+                }
+
+                if (attractors.length > 0) {
+                    let totalFx = 0;
+                    let totalFy = 0;
+
+                    for (let att of attractors) {
+                        let dx = att.x - this.x;
+                        let dy = att.y - this.y;
+                        let distSq = dx*dx + dy*dy;
+                        let dist = Math.sqrt(distSq);
+                        
+                        // Gravity well force calculation
+                        if (dist > 5) { // Prevent singularity explosion
+                            let force = (GRAVITY_STRENGTH * (att.depth / 10)) / (dist * 0.05 + 1);
+                            totalFx += (dx / dist) * force;
+                            totalFy += (dy / dist) * force;
+                        }
+                    }
+
+                    this.vx += totalFx;
+                    this.vy += totalFy;
+                }
+
+                // Cap maximum velocity for smoother, less chaotic flow
+                let speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+                if (speed > 8) {
+                    this.vx = (this.vx / speed) * 8;
+                    this.vy = (this.vy / speed) * 8;
+                }
+
+                this.vx *= FRICTION;
+                this.vy *= FRICTION;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Screen wrap
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+
+                this.history.push({x: this.x, y: this.y});
+                if (this.history.length > 12) this.history.shift();
+            }
+
+            draw() {
+                if (this.history.length < 2) return;
+                
+                ctx.beginPath();
+                let speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+                let alpha = Math.min(0.8, speed * 0.2 + 0.1);
+                
+                // Fade out at end of life
+                if (this.age > this.maxAge - 50) {
+                    alpha *= (this.maxAge - this.age) / 50;
+                }
+                
+                ctx.strokeStyle = `rgba(100, 220, 255, ${alpha})`;
+                ctx.lineWidth = 1.5;
+                
+                ctx.moveTo(this.history[0].x, this.history[0].y);
+                for (let i = 1; i < this.history.length; i++) {
+                    // Prevent drawing long lines across screen wrap
+                    let dx = this.history[i].x - this.history[i-1].x;
+                    let dy = this.history[i].y - this.history[i-1].y;
+                    if (Math.abs(dx) > width/2 || Math.abs(dy) > height/2) {
+                        ctx.moveTo(this.history[i].x, this.history[i].y);
+                    } else {
+                        ctx.lineTo(this.history[i].x, this.history[i].y);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        class Attractor {
+            constructor(x, y, label) {
+                this.x = x;
+                this.y = y;
+                this.targetDepth = 30; // Max depth of the valley
+                this.depth = 0;        // Animates in
+                this.label = label;
+            }
+            
+            update() {
+                if (this.depth < this.targetDepth) this.depth += 0.5;
+            }
+
+            draw() {
+                // Label
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.label, this.x, this.y - 20);
+
+                // Core
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#ff4444';
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            resize();
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push(new Particle());
+            }
+            animate();
+        }
+
+        function clearSim() {
+            presetTimeouts.forEach(clearTimeout);
+            presetTimeouts = [];
+            attractors = [];
+            conceptIndex = 0;
+            reportedRidges.clear();
+            particles.forEach(p => p.reset());
+            document.getElementById('toast-container').innerHTML = '';
+        }
+
+        function resize() {
+            width = canvas.width = container.clientWidth;
+            height = canvas.height = container.clientHeight;
+        }
+
+        // Calculate grid distortion based on gravity wells
+        function getWarpedPoint(x, y) {
+            let wx = x;
+            let wy = y;
+            let pulls = [];
+            
+            for (let att of attractors) {
+                let dx = att.x - x;
+                let dy = att.y - y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 400) {
+                    let pull = (att.depth * 50) / (dist + 50);
+                    wx += (dx / dist) * pull;
+                    wy += (dy / dist) * pull;
+                    pulls.push({ pull: pull, label: att.label });
+                }
+            }
+            
+            // Sort pulls descending to find the top two competing forces
+            pulls.sort((a, b) => b.pull - a.pull);
+            let p1 = pulls[0] ? pulls[0].pull : 0;
+            let p2 = pulls[1] ? pulls[1].pull : 0;
+            
+            // A ridge exists where the top two pulls are both strong and nearly equal
+            let ridgeIntensity = 0;
+            if (p1 > 0.5 && p2 > 0.5) {
+                let tension = p2 / p1; // Approaches 1 at the exact boundary
+                ridgeIntensity = Math.pow(tension, 6); // Steep curve to isolate the ridge line
+                
+                // Notify if a strong new ridge forms
+                if (ridgeIntensity > 0.5) {
+                    let label1 = pulls[0].label;
+                    let label2 = pulls[1].label;
+                    let ridgeKey = [label1, label2].sort().join('-');
+                    if (!reportedRidges.has(ridgeKey)) {
+                        reportedRidges.add(ridgeKey);
+                        showToast(`Blue Ridge: Fuzzy boundary formed between ${label1} and ${label2}.`);
+                    }
+                }
+            }
+
+            return { x: wx, y: wy, basePull: p1, ridgeIntensity: ridgeIntensity };
+        }
+
+        function drawLandscapeGrid() {
+            let cols = Math.ceil(width / GRID_SPACING);
+            let rows = Math.ceil(height / GRID_SPACING);
+
+            let points = [];
+            for (let i = 0; i <= cols; i++) {
+                points[i] = [];
+                for (let j = 0; j <= rows; j++) {
+                    points[i][j] = getWarpedPoint(i * GRID_SPACING, j * GRID_SPACING);
+                }
+            }
+
+            for (let i = 0; i <= cols; i++) {
+                for (let j = 0; j <= rows; j++) {
+                    let p = points[i][j];
+                    let right = points[i+1]?.[j];
+                    let bottom = points[i][j+1];
+
+                    // Base color: White, fading in slightly near valleys
+                    let alphaBase = Math.min(0.3, 0.05 + p.basePull * 0.05);
+                    let color = `rgba(255, 255, 255, ${alphaBase})`;
+                    ctx.lineWidth = 1;
+
+                    // Ridge override: Glow bright blue at boundaries
+                    if (p.ridgeIntensity > 0.05) {
+                        let alpha = 0.4 + (p.ridgeIntensity * 0.6);
+                        color = `rgba(60, 130, 255, ${alpha})`;
+                        ctx.lineWidth = 1 + (p.ridgeIntensity * 2);
+                    }
+
+                    ctx.strokeStyle = color;
+
+                    if (right) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(right.x, right.y);
+                        ctx.stroke();
+                    }
+                    if (bottom) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(bottom.x, bottom.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            // Clear with slightly higher opacity than before so the grid redraws cleanly
+            ctx.fillStyle = 'rgba(10, 10, 12, 0.8)'; 
+            ctx.fillRect(0, 0, width, height);
+
+            drawLandscapeGrid();
+
+            attractors.forEach(a => {
+                a.update();
+                a.draw();
+            });
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // Interactions
+        window.addEventListener('resize', resize);
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+        
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+
+            // Check if clicking an existing attractor to drag
+            let clickedExisting = false;
+            for (let att of attractors) {
+                let dx = att.x - pos.x;
+                let dy = att.y - pos.y;
+                if (Math.sqrt(dx*dx + dy*dy) < 30) {
+                    draggedAttractor = att;
+                    clickedExisting = true;
+                    break;
+                }
+            }
+
+            if (!clickedExisting) {
+                let label = conceptNames[conceptIndex % conceptNames.length];
+                conceptIndex++;
+                attractors.push(new Attractor(pos.x, pos.y, label));
+                
+                showToast(`Concept '${label}' added. Watch the landscape warp to accommodate it.`);
+                
+                // Minor perturbation on new concept creation
+                particles.forEach(p => {
+                    p.vx += (Math.random() - 0.5) * 6;
+                    p.vy += (Math.random() - 0.5) * 6;
+                });
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (draggedAttractor) {
+                const pos = getMousePos(e);
+                draggedAttractor.x = pos.x;
+                draggedAttractor.y = pos.y;
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            draggedAttractor = null;
+        });
+
+        document.getElementById('presetBtn').addEventListener('click', () => {
+            clearSim();
+            document.getElementById('menu-controls').style.display = 'none';
+            document.getElementById('sim-controls').style.display = 'block';
+            
+            showToast("Concept 'Chair' establishes a deep logic basin.");
+            attractors.push(new Attractor(width * 0.45, height * 0.35, conceptNames[0])); // Chair
+            
+            presetTimeouts.push(setTimeout(() => {
+                attractors.push(new Attractor(width * 0.75, height * 0.35, conceptNames[1])); // Couch
+                showToast("Concept 'Couch' added. The blue ridge is the fuzzy 'Loveseat' boundary.");
+            }, 4000));
+
+            presetTimeouts.push(setTimeout(() => {
+                attractors.push(new Attractor(width * 0.6, height * 0.7, conceptNames[2])); // Bed
+                showToast("'Bed' added. Notice the blue intersections—where does a Futon settle?");
+                conceptIndex = 3;
+            }, 8000));
+        });
+
+        document.getElementById('freeplayBtn').addEventListener('click', () => {
+            clearSim();
+            document.getElementById('menu-controls').style.display = 'none';
+            document.getElementById('sim-controls').style.display = 'block';
+            showToast("Freeplay Mode: Click anywhere to add your own concepts.");
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            clearSim();
+            document.getElementById('menu-controls').style.display = 'block';
+            document.getElementById('sim-controls').style.display = 'none';
+        });
+
+        document.getElementById('heatBtn').addEventListener('click', () => {
+            // High energy injection to force particles out of local minima (basins)
+            particles.forEach(p => {
+                p.vx += (Math.random() - 0.5) * 30;
+                p.vy += (Math.random() - 0.5) * 30;
+            });
+        });
+
+        init();
+    </script>
+</body>
+</html>

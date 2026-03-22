@@ -97,7 +97,7 @@ The network doesn't store each experience separately. It stores what the experie
 
 To make this concrete, here's a small simulation. Repeatedly train the same co-occurring features and watch their links strengthen under a simple Hebbian update rule.
 
-{{< simulation src="/simulations/JA_sim.html" title="Hebbian wiring simulator" height="620" >}}
+{{< simulation src="/simulations/JA_sim.html?v=2" title="Hebbian wiring simulator" height="620" >}}
 
 #### The Landscape Intuition
 

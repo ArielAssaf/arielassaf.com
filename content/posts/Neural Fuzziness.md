@@ -96,7 +96,7 @@ A positive link between two neurons makes them *want* the same sign. A negative 
 
 **Storing multiple patterns** is just as simple. If you have *p* different patterns (ξ¹, ξ², ..., ξᵖ), you add up the contributions:
 
-$$w\_{ij} = \sum\_{k=1}^{p} \xi_i^k \cdot \xi_j^k$$
+$$w_{ij} = \sum_{k=1}^{p} \xi_i^k \cdot \xi_j^k$$
 
 Now here's the magic. Suppose you have three different experiences of Jennifer Aniston. Each time, some neurons are active (her face, her voice, the *Friends* theme) and others aren't. The Hebbian rule says: for each experience, strengthen connections between neurons that match and weaken connections between neurons that differ.
 

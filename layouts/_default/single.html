@@ -41,6 +41,10 @@
     {{- else }}{{ .Content }}{{ end }}
   </div>
   {{- end }}
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <script defer src="/vendor/katex/katex.min.js"></script>
+  <script defer src="/vendor/katex/auto-render.min.js"></script>
+  <script defer src="/js/math-render.js"></script>
 
   <footer class="post-footer">
     {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}

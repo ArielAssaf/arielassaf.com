@@ -3,6 +3,11 @@
 ## Local Workflow
 - Create or edit posts in `content/posts/*.md`.
 - Mark posts live with frontmatter `draft: false`.
+- Math in posts:
+  - Inline: `$...$` or `\(...\)`
+  - Display: `$$...$$` or `\[...\]`
+  - Do not escape LaTeX subscripts in math mode (`w_{ij}`, not `w\_{ij}`).
+  - Runtime renderer is KaTeX from local static files (`/vendor/katex/*` + `/js/math-render.js`), not CDN.
 - For interactive simulations, place HTML files in `static/simulations/*.html` and embed with:
   - `{{< simulation src="/simulations/<file>.html" title="..." height="620" >}}`
 - Validate build:

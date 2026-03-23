@@ -106,7 +106,7 @@ The network doesn't store each experience separately. It stores what the experie
 
 To try and make this more concrete, I built a simulation where the Hebbian rule updates a small set of neurons based on input. You can watch the wiring happen in real time—see which connections strengthen and which fade as patterns repeat.
 
-## insert JA neuron HTML here
+{{< simulation src="/simulations/hebbian-wiring.html" title="Hebbian Wiring Simulator" height="620" >}}
 
 #### The Landscape Intuition
 
@@ -133,9 +133,7 @@ Think of the network's weights as carving a landscape of hills and valleys. Each
 - **A cue** is where you drop the marble.
 
 
-EEE We should introduce the visualization here that is the more complex version of the Hebbian simulation where we start seeing complex concepts and their interactions. EEE
-
-$$INSERT HTML VISUALIZATION HERE: Interactive attractor landscape where readers can click to create valleys and watch "thoughts" settle into stable states.$$
+{{< simulation src="/simulations/attractor-landscape.html" title="Attractor Landscape Simulator" height="680" >}}
 
 The mathematics is simple. But what it produces is not: a physical system that automatically extracts abstract commonality from concrete experience, stores it as terrain, and retrieves it from partial information.
 

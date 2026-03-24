@@ -12,11 +12,11 @@ I followed this curiosity into the underlying mathematics—Hopfield networks, a
 
 This highlighted a tension I couldn't shake. Philosophy demands precision: sharp definitions, formal logic, clean conceptual tools. But the biological matter that generates these concepts is messy, plastic, and inherently fuzzy.
 
-Science has a history of pulling the rug out from under philosophy. Relativity dissolved the absolute space and time that Newton had taken for granted. Evolutionary biology undermined the idea that species have fixed essences, showing that sharp category boundaries are human impositions on a continuous process. Quantum mechanics introduced irreducible randomness into the foundations of physics, upending two centuries of confidence that the universe was deterministic. In each case, new physical facts forced new conceptual frameworks—not as optional upgrades, but as corrections to philosophies that had been built on physics that turned out to be wrong.
+This has happened before. Relativity dissolved the absolute space and time that philosophy had taken for granted. Evolution showed that species don't have fixed essences—that sharp category boundaries are things we impose on a continuous process. Quantum mechanics made randomness fundamental, not a sign of ignorance. Each time, new physics forced new philosophy—not as an optional upgrade, but as a correction.
 
 Yet when it comes to the "wetware" of the brain—the physical machinery (substrate) that actually produces thought—philosophy has been remarkably slow to absorb the implications. We treat the messy reality of neurons as a mere implementation detail—like the wiring of a computer that doesn't change the logic of the software. But if our concepts are physically instantiated in this messy, fuzzy way, shouldn't that change our philosophies of truth and logic?
 
-This piece is my inquiry. I'll walk through the neuroscience, the mathematics, and then push toward application—because the nature of a substrate shapes and constrains what can be built on it, and I suspect philosophy has been ignoring this particular substrate for too long.
+This essay is the foundation for a series. I'll walk through the neuroscience and the mathematics, and arrive at a claim I think has teeth: that concepts are attractor valleys with sloped sides, not boxes with sharp edges—and that a surprising number of philosophy's classic puzzles come from ignoring that shape. Subsequent essays will push this into vagueness, epistemology, ethics, and what large language models might teach us about concept geometry.
 
 ---
 
@@ -46,7 +46,7 @@ But the implication is stark: a concept is not a definition in a dictionary. It'
 
 How could a concept—the most elusive entity in philosophy—be embodied in wet, biological neurons? How can physical matter capture the "commonality" we find impossible to pin down in words?
 
-To understand this, I started where researchers started: with models. How do neuroscientists think about what's happening in these networks? That question led me deep into Hebbian learning—and the math really helped my intuition, something it should always do but not often enough for me.
+To understand this, I started where researchers started: with models. How do neuroscientists think about what's happening in these networks? That question led me deep into Hebbian learning—and the math really helped my intuition, something it should always do, but does not often enough in my case.
 
 The core principle is simple: **Neurons that fire together, wire together.**
 
@@ -96,7 +96,7 @@ A positive link between two neurons makes them *want* the same sign. A negative 
 
 **Storing multiple patterns** is just as simple. If you have *p* different patterns (ξ¹, ξ², ..., ξᵖ), you add up the contributions:
 
-$$w_{ij} = \sum_{k=1}^{p} \xi_i^k \cdot \xi_j^k$$
+$$w\_{ij} = \sum\_{k=1}^{p} \xi_i^k \cdot \xi_j^k$$
 
 Now here's the magic. Suppose you have three different experiences of Jennifer Aniston. Each time, some neurons are active (her face, her voice, the *Friends* theme) and others aren't. The Hebbian rule says: for each experience, strengthen connections between neurons that match and weaken connections between neurons that differ.
 
@@ -183,65 +183,26 @@ No. And the reason is simple. Describing the substrate of a concept doesn't elim
 
 What the neural picture *does* change is our expectations. If concepts are attractor valleys with sloped sides, we should stop being surprised when they don't have sharp boundaries. We should stop treating definitional failure as a philosophical crisis and start treating it as a predictable consequence of how concepts get built—in any substrate, by any system that learns by extracting what's common from experience. The emergence is real. But what emerges is constrained by how it emerges.
 
-## 6. Vagueness Revisited: Hills, Mountains, and Transitions
+## 6. The Mismatch
 
-Now we can approach the Sorites Paradox—the Heap Paradox.
+Here's the pattern worth naming: continuous landscapes resist discrete dissection. You can't carve a valley at its joints because it doesn't have joints.
 
-- 1 grain of sand is not a heap.
+But our primary tools for working with concepts—formal definitions, necessary and sufficient conditions, binary predicates, logical categories—are all dissection tools. They assume that concepts have edges. Sometimes they do. "Prime number" has a cliff for a wall—you're either divisible only by one and yourself, or you're not. "Triangle" has a cliff. But notice something about these examples: they're mathematical. Their boundaries are sharp because they were stipulated to be sharp. Someone decided what "prime" means, and the definition has no sloped sides because it was engineered not to. Mathematical concepts are constructed objects. Their edges are put there on purpose.
 
-- 2 grains are not a heap.
+Natural concepts aren't like that. "Chair," "heap," "knowledge," "person," "harm"—nobody stipulated these. They were learned, carved out of experience by the Hebbian process we've been tracing. And that process, as we've seen, produces valleys with sloped sides. It can't help it. When you learn from variable experience, what you get is a gradient, not a cliff.
 
-- ...
+The confusion between these two kinds of concepts is old—and it has a name. Aristotle's system of categories (genus, species, differentia) was built on the assumption that nature comes pre-carved into kinds: that every object belongs to exactly one species, defined by a set of essential properties that are both necessary and sufficient. A thing either is or isn't a mammal. It either is or isn't a substance. The categories are exhaustive—everything fits somewhere—and mutually exclusive—nothing fits in two places at once. But the attractor picture suggests this expectation was a generalization from a special case. Stipulated concepts have edges. Most learned concepts don't. And the philosophical tradition has spent centuries trying to find edges on objects that slope.
 
-- At what exact number does it become a heap?
+This framework worked brilliantly for the concepts it was designed around—geometric forms, logical classes, and biological species as Aristotle understood them. That last one is worth pausing on, because it's the example where history already ran the experiment. Aristotle looked at the living world and saw fixed, discrete kinds: horses are horses, dogs are dogs, and the boundaries between species are as sharp as the boundary between triangles and circles. For two thousand years, that seemed obviously right. Then Darwin showed it wasn't. Species are populations drifting through a continuous space of variation. The boundaries between them are real enough to be useful, but they're not sharp—they're exactly the kind of graded transitions that attractor geometry predicts. "When does a subspecies become a species?" is the biologist's version of "when does a hill become a mountain?"
 
-Logic fails here because it demands a binary switch. Attractor theory might not solve the problem, but it reframes it in a way that may be productive.
+What matters for our argument is not just that Aristotle was wrong about species—it's how biology advanced past him. It didn't find better boundaries. It dissolved the assumption that boundaries were the right thing to look for. The category system didn't get refined. It got replaced by a framework—population thinking—that was built for gradients rather than edges. That's exactly the kind of move I'm suggesting philosophy needs to make with concepts more broadly.
 
-Philosophers have already proposed something in this neighborhood: degree theories of vagueness, where predicates like "heap" come in degrees of truth rather than being simply true or false. The attractor picture is sympathetic to this idea, but it offers something richer—not just degrees along a single slider, but a whole landscape with its own shape, one that varies from person to person and context to context.
+And yet the Aristotelian expectation survived its own best example. The definitional method that analytic philosophy inherited still rests on the assumption that concepts have edges—that there's always a set of properties that draws a clean line between what's in and what's out. Biology moved on. Philosophy, in this respect, hasn't.
 
-Imagine two valleys side-by-side. One is "Non-Heap," the other is "Heap." Between them is a ridge—what topologists call a **saddle point**, a place where the landscape curves up in one direction and down in another. It's unstable: a marble perched there could roll either way.
 
-As you add grains of sand, you're pushing the ball up the slope of the "Non-Heap" valley. There's no single point where it switches. There's a **transition zone**—the ridge—where the state is unstable. The neural network might flicker between the two concepts.
+## 7. Situating the Argument
 
-What the attractor framing adds beyond standard degree theory is structure: the transition isn't a smooth linear gradient from 0 to 1. It has a specific shape—steep on some axes, shallow on others—determined by the learning history that carved the valleys. Different people, with different experiences, will have differently shaped ridges. The "vagueness" isn't in the word or the world. It's in the geometry, and the geometry varies.
-
-Vagueness, on this account, is the feeling of a neural state traversing a saddle point.
-
-The same logic could apply to other classic puzzles:
-
-- When does a hill become a mountain?
-
-- When does a person become old?
-
-- When does a collection of cells become a person?
-
-I don't want to claim these puzzles are "solved." But they might be less mysterious when reframed this way. They might not be failures of language at all—just accurate descriptions of continuous landscapes being forced into discrete categories.
-
----
-
-## 7. So What? Questions Worth Asking
-
-If we take this seriously—that knowledge might be topology, not propositions—it opens questions worth pursuing in detail. Let me sketch three.
-
-**Knowledge**
-
-What would it mean to replace "justified true belief" with something like "stable attractor"? The standard philosophical definition of knowledge is a belief that is both true and justified. But if beliefs are valleys, what does "justified" mean? Perhaps it means the valley was carved by reliable processes—consistent experiences that track real patterns in the world. Or perhaps this whole translation is a category error. I'm not sure.
-
-There's also the question of conviction. What makes us *feel* certain? Is certainty the depth of a valley? The steepness of its walls? I don't know, but I'd like to.
-
-**Ethics**
-
-We keep trying to build perfectly consistent ethical systems, and they keep generating paradoxes. The Trolley Problem may be less mysterious—and possibly more interesting—when seen as a topological ridge where conflicting moral attractor valleys meet. "Do no harm" and "minimize total harm" are each stable attractors; the trolley scenario places you on the saddle point between them. The discomfort isn't confusion. It's the instability of a state caught between two basins of attraction. This doesn't resolve the dilemma, but it suggests that searching for a single consistent moral principle may be like searching for a single valley in a landscape that has two.
-
-**Experimental Philosophy?**
-
-Large language models are, in a meaningful sense, synthetic systems with their own attractor landscapes. They form concepts through statistical extraction of invariants from data—structurally analogous to Hebbian learning, even if mechanistically different. We can probe their concept boundaries, map their transition zones, test whether their "vagueness" has the same topological structure as ours. This could constitute a genuine form of experimental philosophy: testing claims about the geometry of concepts in systems we can fully inspect. If LLM concept boundaries show the same saddle-point structure as human concepts, the case for topology-as-epistemology gets stronger—because the substrate is radically different, but the geometry converges.
-
----
-
-## 8. Situating the Argument
-
-I'm not the first to suggest these connections. The groundwork was laid decades ago, and it's worth being clear about where this essay sits.
+I should be clear: none of this is new. The groundwork was laid decades ago, and it matters where this essay sits relative to it.
 
 The **connectionist** movement of the 1980s (Rumelhart, McClelland) argued that cognition is pattern-matching in neural networks, not symbol manipulation. This was a paradigm-level claim, and it generated fierce debate—but the philosophical implications were largely treated as a problem for cognitive science, not for epistemology proper.
 
@@ -251,6 +212,34 @@ The **connectionist** movement of the 1980s (Rumelhart, McClelland) argued that 
 
 Philosophy has largely treated these insights as implementation details—interesting neuroscience that doesn't bear on the "real" questions about truth, knowledge, and meaning.
 
-I think that dismissal was premature. Not because neural implementation determines philosophical truth—the geometry, not the substrate, is the point—but because the topology that emerges from any concept-forming system constrains what concepts can do. If concepts are attractor valleys, they have graded boundaries. If they have graded boundaries, the search for necessary and sufficient conditions is not just difficult but misconceived. And if that search is misconceived, then a significant portion of analytic philosophy has been trying to flatten a landscape that is irreducibly curved.
+I think that dismissal was premature—but I also think the connectionists made it easy. They won an important argument: that cognition is pattern-matching in networks, not symbol manipulation. But they fought the battle on cognitive science's turf, not philosophy's. They described a substrate—small artificial networks—and showed it could do pattern-recognition. What they didn't do is extract the general geometric consequence: that any system forming concepts through statistical extraction from experience will produce attractor valleys with graded boundaries. That's a claim about the topology of concepts, not about neurons—and it's the claim that bears on epistemology. The connectionists opened the door but stopped on the threshold. This series tries to walk through it.
 
-The question I want to leave you with is whether studying the topology of concepts could make progress on puzzles that propositional approaches have been stuck on for centuries.
+## 8. The Mismatch in Action
+
+To see the pattern concretely, consider the oldest example.
+
+The Sorites Paradox—the Heap Paradox—goes like this. One grain of sand is not a heap. If something is not a heap, adding a single grain cannot make it a heap. Therefore, by induction, no number of grains is a heap. The conclusion is absurd, but every step seems valid.
+
+The paradox works because it's formulated in the language of sharp edges: a predicate ("is a heap") that has to be true or false, and a principle (one grain can't flip it) that exploits the absence of any boundary to flip at. It demands an edge. The concept doesn't have one.
+
+In attractor terms, "heap" and "not-a-heap" are two valleys. Between them is a ridge—a transition zone where the landscape is nearly flat and a small perturbation could tip the state either way. There is no cliff between the valleys. There is a saddle. Adding grains of sand pushes the state up the slope of the "not-a-heap" valley, across the ridge, and down into "heap"—but the crossing is gradual, and the exact point where gravity switches depends on the shape of the terrain, which varies from person to person and context to context.
+
+So the paradox isn't showing us that "heap" is a broken concept. It's showing us what happens when you insist on finding an edge in a landscape that slopes. The problem isn't the concept. It's the question.
+
+The next essay develops this properly—including how the saddle-point picture differs from existing responses to Sorites (degree theories, supervaluationism). But the point for now is just to see the pattern: a discrete tool, a continuous landscape, and an apparent paradox that's really an artifact of the mismatch. That same pattern, I'll argue, shows up again and again.
+
+## 9. The Road Ahead
+
+So here's where we are. Concepts are attractor valleys with sloped sides—in any system that forms them through repeated exposure to patterns.
+
+A clarification worth making explicit: "repeated exposure" doesn't mean only your personal experience. Some of our deepest attractor valleys—fear of snakes, face detection, basic intuitions about physical objects—look hardwired. But they were carved by experience too, just not yours. Natural selection is Hebbian learning at an evolutionary timescale: organisms that responded to snakes survived and reproduced; those that didn't were selected out; and over millions of iterations, the "snake = danger" attractor got carved into the genome rather than into individual synapses. The valley is just as sloped—innate snake fear generalizes to garden hoses and coiled ropes, exactly as you'd predict from a graded attractor. So when I say "learned from experience," I mean it broadly: the experience can be yours, or your species'.
+
+The next essay takes on vagueness directly. I want to push the Sorites treatment further—because the saddle-point geometry makes specific, testable predictions. Transition zones should have a shape. That shape should vary between people, change with context, and look different from what both degree theories and supervaluationism expect. If I'm right, the paradox dissolves once you stop demanding a cliff where there's only a slope.
+
+After that, I want to look at knowledge. The standard definition—justified true belief—treats knowledge as binary: you have it or you don't. Gettier cases probe the boundary. But if beliefs are attractor valleys, what does justification even mean? Maybe it's something about the reliability of the carving process. Maybe certainty is just valley depth. I'm not sure yet. But I suspect we've been demanding a sharp knowledge/not-knowledge boundary for a concept that has sloped sides.
+
+Then Ethics. I want to look at David Hume. Hume famously argued that morality isn't a matter of reason or "matters of fact," but of *sentiment*—a feeling of approval or disapproval that arises when we contemplate an action. In the attractor framework, a "moral principle" isn't a logical axiom we deduce from first principles. It's a deep, culturally and biologically carved attractor valley. When we see an act of cruelty, our neural state doesn't perform a syllogism; it slides into a "disapproval" attractor. The persistent failure of moral philosophy to find a single, consistent, edge-based rule (like utilitarianism or deontology) that covers every case might be because we're looking for a cliff in a landscape of sentiments. If our moral concepts are the statistical residue of social and evolutionary experience, they will have sloped sides and overlapping boundaries. I want to explore whether Hume's "moral sense" is actually a description of attractor geometry.
+
+Finally, I want to test whether any of this is substrate-general. Large language models form concepts through statistical extraction from data—structurally analogous to Hebbian learning, but on radically different hardware. If their concept boundaries show the same saddle-point structure as ours, that's striking. It would mean the geometry converges even when the substrate doesn't. That's the strongest version of the claim: topology-as-epistemology, not just topology-as-neuroscience.
+
+The question I keep coming back to is simple, and maybe a little unsettling: how many of philosophy's open problems are actually about the world, and how many are artifacts of trying to cut a continuous landscape at joints it doesn't have?

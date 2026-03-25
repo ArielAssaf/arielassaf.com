@@ -28,7 +28,7 @@ This essay is the foundation for a series. I'll walk through the neuroscience an
 
 In 2005, Quiroga et al. made a discovery that sounded like science fiction.
 
-They were recording from single neurons in the human hippocampus (in patients preparing for epilepsy surgery) when they found something strange: neurons that fired selectively for specific concepts. That finding is the starting point for the later [Neural Fuzziness](/posts/neural-fuzziness/) post.
+They were recording from single neurons in the human hippocampus (in patients preparing for epilepsy surgery) when they found something strange: neurons that fired selectively for specific concepts.
 
 One neuron fired furiously when the patient saw a photo of Jennifer Aniston. But this wasn't just a visual response. The same neuron lit up for the written text of her name. It fired for the sound of her voice. It fired for related audio cues. It even responded to her specific haircut.
 

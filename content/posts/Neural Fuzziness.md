@@ -1,4 +1,8 @@
-# Neural Fuzziness, Concepts, and the Epistemology of Logic
+---
+title: "Neural Fuzziness, Concepts, and the Epistemology of Logic"
+date: 2026-03-25T00:00:00Z
+draft: false
+---
 
 ## 1. Introduction: The Physical Address of a Thought
 
@@ -24,7 +28,7 @@ This essay is the foundation for a series. I'll walk through the neuroscience an
 
 In 2005, Quiroga et al. made a discovery that sounded like science fiction.
 
-They were recording from single neurons in the human hippocampus (in patients preparing for epilepsy surgery) when they found something strange: neurons that fired selectively for specific concepts.
+They were recording from single neurons in the human hippocampus (in patients preparing for epilepsy surgery) when they found something strange: neurons that fired selectively for specific concepts. That finding is the starting point for the later [Neural Fuzziness](/posts/neural-fuzziness/) post.
 
 One neuron fired furiously when the patient saw a photo of Jennifer Aniston. But this wasn't just a visual response. The same neuron lit up for the written text of her name. It fired for the sound of her voice. It fired for related audio cues. It even responded to her specific haircut.
 
@@ -74,7 +78,7 @@ The math here is worth the detour, because its simplicity is the point. The mech
 
 A key insight that took me a while to grasp: **in a Hopfield network, "memory" and "concept" are mathematically the same thing.** Both are stable patterns the network settles into. A memory is a concept of a past experience. A concept is the memory of what many experiences had in common. The math doesn't distinguish between them—and that equivalence is itself interesting, even though real brains turn out to be messier. (Patients who lose the ability to form new memories can still retain old concepts, and vice versa—so the biology clearly has more moving parts than the model.)
 
-A Hopfield network gives us the simplest model of this process. Imagine a network of neurons, each of which can be "on" (+1) or "off" (−1). Between every pair of neurons is a connection with a weight—a number that says how much they influence each other.
+A Hopfield network gives us the simplest model of this process.[^post-order] Imagine a network of neurons, each of which can be "on" (+1) or "off" (−1). Between every pair of neurons is a connection with a weight—a number that says how much they influence each other.
 
 **The key components:**
 
@@ -244,3 +248,5 @@ I should say what I think this framework *doesn't* do, because the absence might
 The next essays push this framework into specific philosophical problems: vagueness and the Sorites paradox, where the saddle-point geometry makes testable predictions about the shape of transition zones; the relationship between belief and credence, where attractor depth might explain why continuous confidence feels binary; Humean ethics, where moral sentiments look like culturally carved attractors with overlapping boundaries; and the question of substrate-generality — whether systems that form concepts through entirely different mechanisms (large language models, say) converge on the same representational geometry. That last question is important, because if the topology holds even when the dynamics differ, then the geometric constraints on concepts are deeper than neuroscience. They're structural consequences of learning from experience, full stop.
 
 The question I keep coming back to is simple, and maybe a little unsettling: how many of philosophy's open problems are actually about the world, and how many are artifacts of trying to cut a continuous landscape at joints it doesn't have?
+
+[^post-order]: What's the mechanism for deciding the order of the posts?

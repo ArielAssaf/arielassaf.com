@@ -1,5 +1,5 @@
 ---
-title: "The Geometry of Meaning, Concepts, and the Epistemology of Logic"
+title: "The Geometry of Meaning"
 aliases:
   - /posts/neural-fuzziness/
 date: 2026-03-25T00:00:00Z

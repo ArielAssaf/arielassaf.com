@@ -24,6 +24,8 @@ Yet when it comes to the "wetware" of the brain—the physical machinery (substr
 
 This essay is the foundation for a series. I'll walk through the neuroscience and the mathematics, and arrive at a claim I think has teeth: that concepts are attractor valleys with sloped sides, not boxes with sharp edges—and that a surprising number of philosophy's classic puzzles come from ignoring that shape. Subsequent essays will push this into vagueness, epistemology, ethics, and what large language models might teach us about concept geometry.
 
+A note on method. This series reasons from neuroscience and mathematics forward, not from philosophical positions backward. I engage with ideas rather than with individual philosophers, and I don't attempt a survey of the literature. I'm asking what the science teaches us about what concepts actually are — their physical structure, their geometry, their boundaries — and then asking to what extent philosophy's tools match that reality. The questions philosophy poses about concepts, the way it manipulates them, the precision it demands of them: do these fit the shape of what concepts turn out to be? Where they don't, I'm claiming the mismatch is worth explaining. This won't settle normative questions — neuroscience tells you what the brain does, not what rationality requires — and I'll be explicit about that boundary when we reach it.
+
 ---
 
 ## 2. The Neurology: Finding Jennifer Aniston
@@ -80,7 +82,9 @@ The math here is worth the detour, because its simplicity is the point. The mech
 
 A key insight that took me a while to grasp: **in a Hopfield network, "memory" and "concept" are mathematically the same thing.** Both are stable patterns the network settles into. A memory is a concept of a past experience. A concept is the memory of what many experiences had in common. The math doesn't distinguish between them—and that equivalence is itself interesting, even though real brains turn out to be messier. (Patients who lose the ability to form new memories can still retain old concepts, and vice versa—so the biology clearly has more moving parts than the model.)
 
-A Hopfield network gives us the simplest model of this process. Imagine a network of neurons, each of which can be "on" (+1) or "off" (−1). Between every pair of neurons is a connection with a weight—a number that says how much they influence each other.
+A caveat before we dive in. No neuroscientist thinks the brain literally runs the Hebbian update rule I'm about to show you. Real synaptic plasticity is vastly more complicated — spike-timing dependent, modulated by dozens of neurochemical signals, operating across multiple timescales, and embedded in network architectures (cortical layers, recurrent loops, inhibitory interneurons) that a Hopfield network doesn't even attempt to capture. The model is a cartoon. But it's the right kind of cartoon: it's the simplest system that produces attractor valleys from repeated exposure, and the geometric shape it produces — valleys with sloped sides, graded transitions, saddle-point boundaries — survives when you add the complications back in. That's the claim. Not that this is how neurons work, but that this is the simplest mechanism that gives us the shape, and the shape is robust. Later in this series, we'll see that large language models — which form their representations through attention-weighted distributions across token sequences, a mechanism that shares essentially nothing with Hebbian synaptic updates — converge on strikingly similar geometries. That convergence is the real argument. If radically different learning mechanisms produce the same topology, then the topology is a consequence of learning from experience, not of any particular substrate or algorithm.
+
+In a Hopfield network, imagine a network of neurons, each of which can be "on" (+1) or "off" (−1). Between every pair of neurons is a connection with a weight—a number that says how much they influence each other.
 
 **The key components:**
 
@@ -138,6 +142,8 @@ Think of the network's weights as carving a landscape of hills and valleys. Each
 
 - **A cue** is where you drop the marble.
 
+
+To make this intuition a little bit more concrete, you can play with the visualization. Click to create valleys and watch "thoughts" settle into stable states.
 
 {{< simulation src="/simulations/attractor-landscape.html" title="Attractor landscape simulator" height="620" >}}
 

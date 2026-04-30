@@ -131,7 +131,7 @@ The network doesn't store each experience separately. It stores what the experie
 
 To make this more concrete, I built a simulation where the Hebbian rule updates a small set of neurons based on input. You can watch the wiring happen in real time — see which connections strengthen and which fade as patterns repeat.
 
-## Insert JA Neuron HTML Here
+{{< simulation src="/simulations/JA_sim.html?v=2" title="Hebbian wiring simulator" height="620" >}}
 
 An insight that took me a while to grasp: **in a Hopfield network, "memory" and "concept" are mathematically the same thing.** Both are stable patterns the network settles into. A memory is a concept of a past experience. A concept is the memory of what many experiences had in common. The math doesn't distinguish between them â€” and that equivalence is itself interesting, but it's also where the spherical cow shows its limits most clearly.
 
@@ -162,7 +162,7 @@ Think of the network's weights as carving a landscape of hills and valleys. Each
 
 To see this play out, you can interact with the visualization. Click to create valleys and watch "thoughts" settle into stable states.
 
-$$INSERT HTML VISUALIZATION HERE: Interactive attractor landscape where readers can click to create valleys and watch "thoughts" settle into stable states.$$
+{{< simulation src="/simulations/attractor-landscape.html" title="Attractor landscape simulator" height="620" >}}
 
 The mathematics is simple. What it produces is more: a physical system that extracts abstract commonality from concrete experience, stores it as terrain, and retrieves it from partial information.
 

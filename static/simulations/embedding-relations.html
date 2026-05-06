@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding Relations: Geometry Can Carry Structure</title>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --panel: #0d1117;
+            --line: #30363d;
+            --accent: #58a6ff;
+            --source: #f2cc60;
+            --target: #a78bfa;
+            --predicted: #3fb950;
+            --muted: #8b949e;
+            --text: #c9d1d9;
+            --warn: #f0883e;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, system-ui, "Segoe UI", sans-serif;
+            overflow: hidden;
+        }
+
+        #embed-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: min(660px, 100vh);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        #top-panel {
+            padding: 14px 20px 10px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--line);
+        }
+
+        h1 {
+            margin: 0 0 4px;
+            font-size: 1.08rem;
+            letter-spacing: 0;
+            color: #fff;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.76rem;
+            line-height: 1.35;
+        }
+
+        #canvas-area {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #controls {
+            padding: 12px 20px 14px;
+            background: var(--panel);
+            border-top: 1px solid var(--line);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px 14px;
+            align-items: center;
+        }
+
+        #readouts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .readout {
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #0f141b;
+        }
+
+        .readout-label {
+            display: block;
+            color: var(--muted);
+            font-size: 0.66rem;
+            line-height: 1.1;
+            margin-bottom: 3px;
+        }
+
+        .readout-value {
+            display: block;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #buttons {
+            display: flex;
+            gap: 7px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        button {
+            box-sizing: border-box;
+            padding: 7px 12px;
+            background: #21262d;
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover { background: #30363d; }
+        button.active {
+            color: #fff;
+            border-color: var(--accent);
+            background: #0d2744;
+        }
+
+        @media (max-width: 720px) {
+            body, html { overflow: auto; }
+            #embed-container {
+                min-height: 100vh;
+                height: 100vh;
+                border-left: 0;
+                border-right: 0;
+                border-radius: 0;
+            }
+            #top-panel { padding: 12px 14px 10px; }
+            #controls {
+                grid-template-columns: 1fr;
+                padding: 10px 14px 14px;
+            }
+            #readouts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .readout { padding: 6px 7px; }
+            .readout-label { font-size: 0.6rem; }
+            .readout-value { font-size: 0.72rem; }
+            #buttons {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+            button {
+                min-width: 0;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="embed-container">
+        <div id="top-panel">
+            <h1>Relations as Directions in Space</h1>
+            <p class="subtitle" id="subtitle">Toy projection of a higher-dimensional embedding space. The visible plane is only a slice; depth stands in for dimensions the screen cannot show.</p>
+        </div>
+
+        <div id="canvas-area">
+            <canvas id="viz"></canvas>
+        </div>
+
+        <div id="controls">
+            <div id="readouts">
+                <div class="readout">
+                    <span class="readout-label">Operation</span>
+                    <span class="readout-value" id="operation-readout">king - man + woman</span>
+                </div>
+                <div class="readout">
+                    <span class="readout-label">Predicted point</span>
+                    <span class="readout-value" id="prediction-readout">queen</span>
+                </div>
+                <div class="readout">
+                    <span class="readout-label">What the geometry adds</span>
+                    <span class="readout-value" id="relation-readout">relation direction</span>
+                </div>
+            </div>
+            <div id="buttons">
+                <button id="gender-btn" class="active">Royalty</button>
+                <button id="capital-btn">Capitals</button>
+                <button id="role-btn">Roles</button>
+                <button id="animate-btn">Replay</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const canvas = document.getElementById('viz');
+        const ctx = canvas.getContext('2d');
+        const subtitle = document.getElementById('subtitle');
+        const operationReadout = document.getElementById('operation-readout');
+        const predictionReadout = document.getElementById('prediction-readout');
+        const relationReadout = document.getElementById('relation-readout');
+        const buttons = {
+            gender: document.getElementById('gender-btn'),
+            capital: document.getElementById('capital-btn'),
+            role: document.getElementById('role-btn'),
+        };
+        const animateBtn = document.getElementById('animate-btn');
+
+        let W = 0;
+        let H = 0;
+        let active = ['gender', 'capital', 'role'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'gender';
+        let progress = 1;
+        let animating = false;
+
+        const examples = {
+            gender: {
+                title: 'Royalty',
+                subtitle: 'The gender direction learned between man and woman can be reused from king toward queen, even when the visible screen is only a projection.',
+                operation: 'king - man + woman',
+                prediction: 'queen',
+                relation: 'gender direction',
+                points: [
+                    { id: 'man', label: 'man', x: 0.22, y: 0.74, z: 0.34, kind: 'base' },
+                    { id: 'woman', label: 'woman', x: 0.66, y: 0.70, z: 0.58, kind: 'target' },
+                    { id: 'king', label: 'king', x: 0.22, y: 0.30, z: 0.46, kind: 'source' },
+                    { id: 'queen', label: 'queen', x: 0.66, y: 0.26, z: 0.70, kind: 'answer' },
+                ],
+                relationFrom: 'man',
+                relationTo: 'woman',
+                applyFrom: 'king',
+                answer: 'queen',
+            },
+            capital: {
+                title: 'Capitals',
+                subtitle: 'The country-to-capital direction is diagonal through the projected space, not the same flat relation as the royalty example.',
+                operation: 'Paris - France + Italy',
+                prediction: 'Rome',
+                relation: 'capital relation',
+                points: [
+                    { id: 'France', label: 'France', x: 0.20, y: 0.64, z: 0.70, kind: 'base' },
+                    { id: 'Paris', label: 'Paris', x: 0.42, y: 0.36, z: 0.40, kind: 'target' },
+                    { id: 'Italy', label: 'Italy', x: 0.50, y: 0.78, z: 0.55, kind: 'source' },
+                    { id: 'Rome', label: 'Rome', x: 0.72, y: 0.50, z: 0.25, kind: 'answer' },
+                ],
+                relationFrom: 'France',
+                relationTo: 'Paris',
+                applyFrom: 'Italy',
+                answer: 'Rome',
+            },
+            role: {
+                title: 'Roles',
+                subtitle: 'Role binding is not the same analogy shape. Fillers and roles occupy different directions, and the bound states live deeper in the represented space.',
+                operation: 'John + lover-role; Mary + beloved-role',
+                prediction: 'John-as-lover + Mary-as-beloved',
+                formula: 'John:lover + Mary:beloved ~= structured role binding',
+                relation: 'role binding',
+                points: [
+                    { id: 'John', label: 'John', x: 0.16, y: 0.72, z: 0.30, kind: 'source' },
+                    { id: 'Mary', label: 'Mary', x: 0.56, y: 0.76, z: 0.42, kind: 'source' },
+                    { id: 'loverRole', label: 'lover role', x: 0.30, y: 0.28, z: 0.62, kind: 'target' },
+                    { id: 'belovedRole', label: 'beloved role', x: 0.70, y: 0.30, z: 0.68, kind: 'target' },
+                    { id: 'JohnLover', label: 'John-as-lover', x: 0.38, y: 0.46, z: 0.86, kind: 'answer' },
+                    { id: 'MaryBeloved', label: 'Mary-as-beloved', x: 0.78, y: 0.50, z: 0.92, kind: 'answer2' },
+                ],
+                roleMode: true,
+                bindings: [
+                    { filler: 'John', role: 'loverRole', result: 'JohnLover', color: '#f0883e', label: 'bind lover role' },
+                    { filler: 'Mary', role: 'belovedRole', result: 'MaryBeloved', color: '#a78bfa', label: 'bind beloved role' },
+                ],
+            },
+        };
+
+        function resize() {
+            const parent = canvas.parentElement;
+            W = canvas.width = parent.clientWidth;
+            H = canvas.height = parent.clientHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        function setActive(name) {
+            active = name;
+            history.replaceState(null, '', `#${name}`);
+            progress = 0;
+            animating = true;
+            for (const key of Object.keys(buttons)) {
+                buttons[key].classList.toggle('active', key === name);
+            }
+            updateReadouts();
+        }
+
+        function updateReadouts() {
+            const ex = examples[active];
+            subtitle.innerText = `Toy projection of a higher-dimensional space. ${ex.subtitle}`;
+            operationReadout.innerText = ex.operation;
+            predictionReadout.innerText = ex.prediction;
+            relationReadout.innerText = ex.relation;
+        }
+
+        function point(id) {
+            return examples[active].points.find(p => p.id === id);
+        }
+
+        function project(p) {
+            const z = p.z ?? 0.5;
+            const scale = Math.min(W, H) * 0.78;
+            const cx = W * 0.5;
+            const cy = H * 0.50;
+            return {
+                x: cx + (p.x - 0.5) * scale + (z - 0.5) * scale * 0.34,
+                y: cy + (p.y - 0.5) * scale - (z - 0.5) * scale * 0.24,
+                z,
+            };
+        }
+
+        function sx(p) {
+            return project(p).x;
+        }
+
+        function sy(p) {
+            return project(p).y;
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1;
+            const step = Math.max(42, Math.min(70, W / 10));
+            for (let x = step; x < W; x += step) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, H);
+                ctx.stroke();
+            }
+            for (let y = step; y < H; y += step) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(W, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawAxes() {
+            const origin = { x: 0.12, y: 0.84, z: 0.18 };
+            const xAxis = { x: 0.28, y: 0.84, z: 0.18 };
+            const yAxis = { x: 0.12, y: 0.68, z: 0.18 };
+            const zAxis = { x: 0.12, y: 0.84, z: 0.48 };
+            drawArrow(sx(origin), sy(origin), sx(xAxis), sy(xAxis), 'rgba(255,255,255,0.35)', '', 0.7);
+            drawArrow(sx(origin), sy(origin), sx(yAxis), sy(yAxis), 'rgba(255,255,255,0.35)', '', 0.7);
+            drawArrow(sx(origin), sy(origin), sx(zAxis), sy(zAxis), 'rgba(240, 136, 62, 0.65)', '', 0.8, true);
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
+            ctx.fillText('visible dimensions', sx(xAxis) + 6, sy(xAxis) + 4);
+            ctx.fillStyle = 'rgba(240, 136, 62, 0.75)';
+            ctx.fillText('hidden depth', sx(zAxis) + 6, sy(zAxis) + 4);
+        }
+
+        function colorFor(kind) {
+            if (kind === 'source') return '#f2cc60';
+            if (kind === 'target') return '#a78bfa';
+            if (kind === 'answer' || kind === 'answer2') return '#3fb950';
+            return '#58a6ff';
+        }
+
+        function drawPoint(p, alpha = 1) {
+            const x = sx(p);
+            const y = sy(p);
+            const color = colorFor(p.kind);
+            const z = p.z ?? 0.5;
+            const radius = 5 + z * 5;
+            const glow = ctx.createRadialGradient(x, y, 1, x, y, 18 + z * 18);
+            glow.addColorStop(0, `${hexToRgba(color, 0.25 * alpha)}`);
+            glow.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(x, y, 18 + z * 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = color;
+            ctx.fillText(p.label, x, y - radius - 7);
+        }
+
+        function hexToRgba(hex, alpha) {
+            const clean = hex.replace('#', '');
+            const r = parseInt(clean.slice(0, 2), 16);
+            const g = parseInt(clean.slice(2, 4), 16);
+            const b = parseInt(clean.slice(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label, alpha = 1, dash = false) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2;
+            if (dash) ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            const head = 9;
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+
+            if (label) {
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(label, (x1 + x2) / 2, (y1 + y2) / 2 - 8);
+            }
+            ctx.restore();
+        }
+
+        function drawFormulaBox() {
+            const ex = examples[active];
+            const boxW = Math.min(W - 40, 420);
+            const boxH = 54;
+            const x = (W - boxW) / 2;
+            const y = H - boxH - 22;
+            ctx.fillStyle = 'rgba(15, 20, 27, 0.92)';
+            ctx.strokeStyle = 'rgba(48, 54, 61, 1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(x, y, boxW, boxH, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(ex.formula || `${ex.operation} ~= ${ex.prediction}`, W / 2, y + 24);
+            ctx.font = '11px sans-serif';
+            ctx.fillStyle = '#8b949e';
+            ctx.fillText('The relation is copied as a direction, not stored as a hand-written rule.', W / 2, y + 42);
+        }
+
+        function interpPoint(a, b, t) {
+            return {
+                x: a.x + (b.x - a.x) * t,
+                y: a.y + (b.y - a.y) * t,
+                z: (a.z ?? 0.5) + ((b.z ?? 0.5) - (a.z ?? 0.5)) * t,
+            };
+        }
+
+        function drawRoleBinding(ex) {
+            for (const p of ex.points) drawPoint(p, p.kind === 'answer' || p.kind === 'answer2' ? 0.96 : 0.82);
+
+            for (const binding of ex.bindings) {
+                const filler = point(binding.filler);
+                const role = point(binding.role);
+                const result = point(binding.result);
+                const fillerPath = interpPoint(filler, result, progress);
+                const rolePath = interpPoint(role, result, progress);
+
+                drawArrow(sx(filler), sy(filler), sx(fillerPath), sy(fillerPath), binding.color, progress > 0.25 ? 'filler' : '', 0.9);
+                drawArrow(sx(role), sy(role), sx(rolePath), sy(rolePath), '#58a6ff', progress > 0.25 ? 'role' : '', 0.75, true);
+
+                if (progress > 0.05) {
+                    const midX = (sx(fillerPath) + sx(rolePath)) / 2;
+                    const midY = (sy(fillerPath) + sy(rolePath)) / 2;
+                    ctx.beginPath();
+                    ctx.arc(midX, midY, 7, 0, Math.PI * 2);
+                    ctx.fillStyle = binding.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1.1;
+                    ctx.stroke();
+                }
+            }
+
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(201, 209, 217, 0.72)';
+            ctx.fillText('The same names can be bound into different role positions without losing who does what.', W / 2, H * 0.18);
+        }
+
+        function draw() {
+            ctx.fillStyle = '#0a0a0c';
+            ctx.fillRect(0, 0, W, H);
+            drawGrid();
+            drawAxes();
+
+            const ex = examples[active];
+            if (ex.roleMode) {
+                drawRoleBinding(ex);
+                drawFormulaBox();
+
+                if (animating) {
+                    progress += 0.012;
+                    if (progress >= 1) {
+                        progress = 1;
+                        animating = false;
+                    }
+                }
+
+                requestAnimationFrame(draw);
+                return;
+            }
+
+            const from = point(ex.relationFrom);
+            const to = point(ex.relationTo);
+            const apply = point(ex.applyFrom);
+            const answer = point(ex.answer);
+
+            for (const p of ex.points) drawPoint(p, p.id === ex.answer ? 0.95 : 0.85);
+
+            drawArrow(sx(from), sy(from), sx(to), sy(to), '#58a6ff', 'learned direction', 0.8);
+
+            const dx = sx(to) - sx(from);
+            const dy = sy(to) - sy(from);
+            const predictedX = sx(apply) + dx * progress;
+            const predictedY = sy(apply) + dy * progress;
+
+            drawArrow(
+                sx(apply),
+                sy(apply),
+                predictedX,
+                predictedY,
+                '#f0883e',
+                progress > 0.18 ? 'copy direction' : '',
+                0.95
+            );
+
+            if (progress > 0.04) {
+                ctx.beginPath();
+                ctx.arc(predictedX, predictedY, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#f0883e';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
+
+            if (progress > 0.92) {
+                drawArrow(predictedX, predictedY, sx(answer), sy(answer), '#3fb950', '', progress, true);
+            }
+
+            drawFormulaBox();
+
+            if (animating) {
+                progress += 0.012;
+                if (progress >= 1) {
+                    progress = 1;
+                    animating = false;
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        buttons.gender.addEventListener('click', () => setActive('gender'));
+        buttons.capital.addEventListener('click', () => setActive('capital'));
+        buttons.role.addEventListener('click', () => setActive('role'));
+        animateBtn.addEventListener('click', () => {
+            progress = 0;
+            animating = true;
+        });
+
+        for (const key of Object.keys(buttons)) {
+            buttons[key].classList.toggle('active', key === active);
+        }
+        updateReadouts();
+        draw();
+    })();
+    </script>
+</body>
+</html>

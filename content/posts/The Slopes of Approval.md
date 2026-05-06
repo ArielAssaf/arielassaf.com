@@ -4,6 +4,8 @@ date: 2026-05-06T12:00:00Z
 draft: false
 ---
 
+*This essay follows [The Shape That Belief and Credence Share](/posts/the-shape-that-belief-and-credence-share/).*
+
 ## OK, so what should I do?
 
 After the last chapter, I found myself asking a question I hadn't meant to ask yet.

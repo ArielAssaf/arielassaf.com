@@ -6,6 +6,8 @@ date: 2026-04-11T00:00:00Z
 draft: false
 ---
 
+*This is the first essay in the series. The next essay is [The Shape That Belief and Credence Share](/posts/the-shape-that-belief-and-credence-share/).*
+
 ## 1. Introduction: The physical address of a thought
 
 This whole project started with a book about memory.
@@ -224,7 +226,13 @@ Mechanism, and predictions that come from mechanism. Prototype theory works at t
 
 Here is the term that picks them out: **hysteresis**. The route matters. In one well-studied experiment, listeners were walked along a continuum of speech sounds from "say" to "stay," with the silent gap shortening step by step. They kept hearing "stay" further along the continuum than they did when they were walked in the opposite direction.[^category-hysteresis] The boundary between the two categories wasn't sitting at a fixed point. It moved with the direction of approach.
 
-The mechanism, in landscape terms, is asymmetry. The slopes leading into  valleys are not the same. The valley you're already sitting in pulls harder than the valley you might tip into, so the path *out* runs against a steeper gradient than the path *in* would have. Same point on the continuum, different gravitational pull, depending on which side the system started from. That asymmetry between the two slopes is what makes the boundary move with direction. Magnets do this, folding doors do this, ecological regime shifts do this. The attractor account predicts the brain does too. **Path-dependence** is the broader name: history matters to where the system goes next.
+The mechanism, in landscape terms, is not simply asymmetry in a fixed slope. It is history-dependence. The system does not approach the boundary fresh each time, and it is not moving along one road that can simply be traveled in reverse. What happens next depends on where the system has just been.
+
+So moving from "say" toward "stay" is not the same event as moving from "stay" toward "say" viewed backward. The current attractor keeps exerting a pull before the competing attractor fully takes over. That lingering pull shifts the point at which the system changes category. Same stimulus, different recent history, different result.
+
+This is also a useful warning about the landscape metaphor itself. It can make cognition look too reversible, as though concepts were places on a map and thought were just travel between them. Real cognition is not that simple. The route into a judgment is not automatically the route out of it, a problem that will matter later when we get to compositionality.
+
+This also clarifies what kind of "flatness" matters at the boundary. The transition region is flat like a mountain pass, not like the bottom of a bowl. On a flat pass, a tiny nudge can send the marble rolling a long way, perhaps far enough to fall into one valley rather than the other. At the bottom of a bowl, the same nudge is absorbed: the marble rolls back to where it started. A basin floor is stable because small movements are corrected back into the same attractor. A saddle is different: neither attractor dominates, so small perturbations can decide which valley the system falls into.
 
 The same geometry predicts a few other things in the ambiguous region between two concepts. Response patterns should be unstable there, sometimes bimodal â€” neither category, briefly both â€” because the state is sitting near a saddle, where small perturbations tip it either way. The path in should differ from the path out. And priming a related concept should be enough to reshape the valley walls in real time and move the boundary. None of these fall out of prototype theory on its own. All of them are measurable, and that is where the two frameworks should come apart under experimental pressure.
 

@@ -4,6 +4,8 @@ date: 2026-03-26T00:00:00Z
 draft: false
 ---
 
+*This essay follows [The Geometry of Meaning](/posts/the-geometry-of-meaning/).*
+
 ## The Wrong Frame
 
 Epistemologists have been having a fight about belief.

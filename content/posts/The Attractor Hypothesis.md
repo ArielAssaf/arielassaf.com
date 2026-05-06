@@ -4,6 +4,8 @@ date: 2026-05-06T13:00:00Z
 draft: false
 ---
 
+*This essay follows [The Slopes of Approval](/posts/the-slopes-of-approval/).*
+
 ## The Pattern I Should Examine
 
 I've been writing a project about the geometry of mental life, and somewhere in the third chapter I caught myself doing something I hadn't planned.

@@ -57,6 +57,8 @@ When neuroscientists want to watch a decision happen in real time, they use a be
 
 Here's what the recordings show. The neurons don't sit quiet and then suddenly fire. They ramp up slowly, like water filling a basin. The firing rate of neurons favoring the correct direction climbs over hundreds of milliseconds while the rate for the wrong direction stays flat or drifts down. When the climbing signal hits a threshold, the monkey flicks its eyes. More coherent dots produce a steeper ramp and a faster decision. Noisier dots produce a shallower ramp and a slower one.[^c2-drift]
 
+{{< simulation src="/simulations/drift-diffusion.html" title="Drift-diffusion simulator" height="620" >}}
+
 The decision looks instantaneous, a sudden flick of the gaze. But the process that produced it was a long, continuous accumulation. Each moment of sensory input nudged the firing rate a little higher or a little lower, like a marble being gently pushed up a slope, until it crested the ridge and dropped into a valley. The commitment was the last thing that happened, not the first.
 
 This pattern, often modeled as drift diffusion, is one of the most replicated findings in decision neuroscience. And it doesn't stop at perception.[^c2-drift]
@@ -131,6 +133,8 @@ Across these cases, the same pattern keeps returning: action looks discrete but 
 The cleanest behavioral case is in speech-categorization. Take a phoneme continuum, say, /ba/ to /pa/, and ask listeners to categorize each step. Run the sequence forward, and the boundary lands at one place. Run it backward, and the boundary lands somewhere else. The transition is direction-dependent: which category you started in changes where you cross out of it. This is *hysteresis*, the history-sensitive settling introduced in the previous chapter.[^c2-hysteresis]
 
 The same signature shows up in the visual domain when you morph one object into another. Take a picture of a dog and morph it, frame by frame, into a picture of a cat. Show the sequence to a subject while recording neurons in the inferior temporal cortex, the region that handles object recognition. The neural population doesn't gradually slide from a "dog pattern" to a "cat pattern." It holds the dog pattern, then snaps to the cat pattern at some threshold. The behavioral hysteresis sits on top of category-tuned neural populations of the kind seen across object-recognition cortex, and analogous direction-dependent effects appear in studies of bistable perception.[^c2-hysteresis]
+
+{{< simulation src="/simulations/hysteresis.html" title="Hysteresis simulator" height="620" >}}
 
 If you started with the dog, you hold onto "dog" longer. If you started with the cat, you hold onto "cat" longer. The transition point depends on which direction you're traveling. That's a direct signature of attractor dynamics: the marble's momentum carries it further in whichever direction it's already rolling.
 

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drift-Diffusion: Continuous Process, Discrete Feeling</title>
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --panel: #0d1117;
+            --accent: #58a6ff;
+            --belief: #3fb950;
+            --doubt: #f85149;
+            --marble: #f2cc60;
+            --text: #c9d1d9;
+            --dim: #8b949e;
+            --warn: #f0883e;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg); color: var(--text);
+            font-family: -apple-system, system-ui, 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        #embed-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: min(660px, 100vh);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        #top-panel {
+            padding: 14px 20px 10px;
+            background: var(--panel);
+            border-bottom: 1px solid #30363d;
+        }
+
+        h1 { margin: 0 0 4px; font-size: 1.05rem; color: #fff; letter-spacing: 0; }
+        .subtitle { font-size: 0.75rem; color: var(--dim); line-height: 1.35; margin: 0; }
+
+        #canvas-area {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+
+        #controls-bar {
+            padding: 12px 20px 14px;
+            background: var(--panel);
+            border-top: 1px solid #30363d;
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 12px 16px;
+            align-items: end;
+        }
+
+        #readout-row {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .readout {
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            background: #0f141b;
+        }
+
+        .readout-label {
+            display: block;
+            color: var(--dim);
+            font-size: 0.66rem;
+            line-height: 1.1;
+            margin-bottom: 3px;
+        }
+
+        .readout-value {
+            display: block;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .ctrl-label {
+            font-size: 0.65rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #21262d;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent); cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--accent); cursor: pointer; border: none;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        button {
+            box-sizing: border-box;
+            padding: 7px 14px;
+            background: #21262d;
+            color: var(--text);
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 720px) {
+            body, html { overflow: auto; }
+            #embed-container {
+                min-height: 100vh;
+                height: 100vh;
+                border-radius: 0;
+                border-left: 0;
+                border-right: 0;
+            }
+            #top-panel { padding: 12px 14px 10px; }
+            #controls-bar {
+                grid-template-columns: 1fr 1fr;
+                padding: 10px 14px 14px;
+            }
+            #readout-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .readout { padding: 6px 7px; }
+            .readout-label { font-size: 0.6rem; }
+            .readout-value { font-size: 0.72rem; }
+            .btn-row {
+                grid-column: 1 / -1;
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                width: 100%;
+            }
+            button {
+                min-width: 0;
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+        }
+        button:hover { background: #30363d; }
+        button.active { background: #238636; color: #fff; border-color: #238636; }
+        button.nudge-belief { border-color: #1a5c2c; color: var(--belief); }
+        button.nudge-belief:hover { background: #0d2818; }
+        button.nudge-doubt { border-color: #6e2020; color: var(--doubt); }
+        button.nudge-doubt:hover { background: #2a0f0f; }
+
+        #toast-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast {
+            background: rgba(15, 15, 20, 0.95);
+            color: var(--accent);
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            font-size: 0.82rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            animation: fadeInOut 5s forwards;
+            backdrop-filter: blur(4px);
+            max-width: 500px;
+            text-align: center;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            8% { opacity: 1; transform: translateY(0); }
+            82% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div id="embed-container">
+        <div id="top-panel">
+            <h1>Evidence Accumulation in an Attractor Landscape</h1>
+            <p class="subtitle" id="subtitle">A marble sits in the "Belief" valley. Evidence nudges it continuously, and also reshapes the basin. Small updates can move the floor; enough accumulated evidence can still snap across the ridge.</p>
+        </div>
+
+        <div id="canvas-area">
+            <canvas id="vizCanvas"></canvas>
+            <div id="toast-container"></div>
+        </div>
+
+        <div id="controls-bar">
+            <div id="readout-row">
+                <div class="readout">
+                    <span class="readout-label">Current state</span>
+                    <span class="readout-value" id="state-readout">Belief</span>
+                </div>
+                <div class="readout">
+                    <span class="readout-label">Position</span>
+                    <span class="readout-value" id="position-readout">Deep in valley</span>
+                </div>
+                <div class="readout">
+                    <span class="readout-label">Evidence stream</span>
+                    <span class="readout-value" id="stream-readout">Stopped</span>
+                </div>
+                <div class="readout">
+                    <span class="readout-label">Stability</span>
+                    <span class="readout-value" id="stability-readout">Valley floor</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="ctrl-label">
+                    <span>Evidence Strength</span>
+                    <span id="strength-val">Medium</span>
+                </div>
+                <input type="range" id="strengthSlider" min="1" max="5" step="1" value="3">
+            </div>
+            <div class="control-group">
+                <div class="ctrl-label">
+                    <span>Noise (Uncertainty)</span>
+                    <span id="noise-val">Low</span>
+                </div>
+                <input type="range" id="noiseSlider" min="0" max="4" step="1" value="1">
+            </div>
+            <div class="btn-row">
+                <button id="nudge-doubt-btn" class="nudge-doubt">+ Counter-Evidence</button>
+                <button id="nudge-belief-btn" class="nudge-belief">+ Supporting Evidence</button>
+                <button id="stream-btn">Stream Counter</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const canvas = document.getElementById('vizCanvas');
+        const ctx = canvas.getContext('2d');
+        const stateReadout = document.getElementById('state-readout');
+        const positionReadout = document.getElementById('position-readout');
+        const streamReadout = document.getElementById('stream-readout');
+        const stabilityReadout = document.getElementById('stability-readout');
+        const streamBtn = document.getElementById('stream-btn');
+        const subtitle = document.getElementById('subtitle');
+        let W, H;
+
+        // Landscape parameters
+        const LANDSCAPE_TOP = 0.08;
+        const LANDSCAPE_BOTTOM = 0.70;
+
+        // Marble state
+        let marblePos = 0.25; // 0..1 across the landscape
+        let marbleVel = 0;
+        const FRICTION = 0.96;
+        const GRAVITY = 0.0004;
+        const RIDGE_X = 0.5;
+        const SLOW_ZONE_MIN = 0.42;
+        const SLOW_ZONE_MAX = 0.58;
+
+        // Evidence particles
+        let particles = [];
+        let trailHistory = [];
+        const MAX_TRAIL = 600;
+
+        // State
+        let currentBasin = 'belief'; // or 'doubt'
+        let transitionCount = 0;
+        let isStreaming = false;
+        let toastShown = {};
+        let pairIndex = 0;
+        let streamCooldown = 0;
+        let evidenceMemory = 0;
+
+        // Controls
+        let evidenceStrength = 3;
+        let noiseLevel = 1;
+
+        const strengthLabels = ['Very Weak', 'Weak', 'Medium', 'Strong', 'Very Strong'];
+        const noiseLabels = ['None', 'Low', 'Medium', 'High', 'Chaotic'];
+        const PAIRS = [
+            { left: 'Belief', right: 'Doubt' },
+            { left: 'Ticket loses', right: 'Ticket wins' },
+            { left: 'Trusted', right: 'Distrusted' },
+            { left: 'Safe', right: 'Unsafe' },
+            { left: 'Likely true', right: 'Likely false' },
+        ];
+
+        function resize() {
+            const container = canvas.parentElement;
+            W = canvas.width = container.clientWidth;
+            H = canvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function showToast(key, msg) {
+            if (toastShown[key]) return;
+            toastShown[key] = true;
+            const container = document.getElementById('toast-container');
+            container.innerHTML = '';
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerText = msg;
+            container.appendChild(t);
+            setTimeout(() => t.remove(), 5000);
+        }
+
+        function currentPair() {
+            return PAIRS[pairIndex];
+        }
+
+        function leftName() {
+            return currentPair().left;
+        }
+
+        function rightName() {
+            return currentPair().right;
+        }
+
+        function resetSimulation(advancePair) {
+            if (isStreaming) toggleStream();
+            if (advancePair) pairIndex = (pairIndex + 1) % PAIRS.length;
+            marblePos = 0.25;
+            marbleVel = 0;
+            trailHistory = [];
+            particles = [];
+            currentBasin = 'belief';
+            transitionCount = 0;
+            streamCooldown = 0;
+            evidenceMemory = 0;
+            toastShown = {};
+            updateReadouts();
+        }
+
+        function updateReadouts() {
+            const isInLeft = marblePos < RIDGE_X;
+            stateReadout.innerText = isInLeft ? leftName() : rightName();
+            stateReadout.style.color = isInLeft ? 'var(--belief)' : 'var(--doubt)';
+            subtitle.innerText = `A marble starts in the "${leftName()}" valley. Evidence nudges it continuously, and also reshapes the basin. Small updates can move the floor; enough accumulated evidence can still snap toward "${rightName()}".`;
+
+            const distance = Math.abs(marblePos - RIDGE_X);
+            if (distance < 0.045) positionReadout.innerText = 'At the ridge';
+            else if (marblePos > SLOW_ZONE_MIN && marblePos < SLOW_ZONE_MAX) positionReadout.innerText = 'Near transition';
+            else if (Math.abs(marblePos - (isInLeft ? leftCenter() : rightCenter())) < 0.04 && Math.abs(evidenceMemory) > 0.08) positionReadout.innerText = 'Updated valley floor';
+            else positionReadout.innerText = 'Deep in valley';
+
+            if (isStreaming) streamReadout.innerText = `Counter-evidence${marblePos > SLOW_ZONE_MIN && marblePos < SLOW_ZONE_MAX ? ' (slowed)' : ' (reshaping)'}`;
+            else streamReadout.innerText = 'Stopped';
+
+            if (distance < 0.045) {
+                stabilityReadout.innerText = 'Flat ridge: unstable';
+                stabilityReadout.style.color = 'var(--warn)';
+            } else if (Math.abs(marblePos - (isInLeft ? leftCenter() : rightCenter())) < 0.05) {
+                stabilityReadout.innerText = 'Stable: slopes return';
+                stabilityReadout.style.color = '#fff';
+            } else {
+                stabilityReadout.innerText = 'Slope: updating';
+                stabilityReadout.style.color = '#fff';
+            }
+        }
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function leftCenter() {
+            const counter = Math.max(0, evidenceMemory);
+            const support = Math.max(0, -evidenceMemory);
+            return 0.25 + counter * 0.2 - support * 0.05;
+        }
+
+        function rightCenter() {
+            const counter = Math.max(0, evidenceMemory);
+            const support = Math.max(0, -evidenceMemory);
+            return 0.75 - counter * 0.08 + support * 0.04;
+        }
+
+        function leftDepth() {
+            const counter = Math.max(0, evidenceMemory);
+            const support = Math.max(0, -evidenceMemory);
+            return 0.7 - counter * 0.28 + support * 0.08;
+        }
+
+        function rightDepth() {
+            const counter = Math.max(0, evidenceMemory);
+            const support = Math.max(0, -evidenceMemory);
+            return 0.55 + counter * 0.28 - support * 0.1;
+        }
+
+        // Energy landscape: two valleys (belief ~0.25, doubt ~0.75) with ridge at ~0.5
+        // Shallower, wider valleys so evidence accumulation can plausibly push the marble over
+        function energy(x) {
+            const a = (x - leftCenter());
+            const b = (x - rightCenter());
+            return leftDepth() * Math.exp(-a * a / 0.035) + rightDepth() * Math.exp(-b * b / 0.04);
+        }
+
+        function energyGradient(x) {
+            const dx = 0.002;
+            return (energy(x + dx) - energy(x - dx)) / (2 * dx);
+        }
+
+        function landscapeY(x) {
+            const e = energy(x);
+            const top = H * LANDSCAPE_TOP;
+            const bottom = H * LANDSCAPE_BOTTOM;
+            const range = bottom - top;
+            // High energy = valley = LOWER on screen (higher Y value)
+            return top + range * 0.3 + e * range * 0.55;
+        }
+
+        function drawLandscape() {
+            const padX = 30;
+            const drawW = W - padX * 2;
+
+            // Gradient fill under curve
+            ctx.beginPath();
+            for (let px = 0; px <= drawW; px++) {
+                const x = px / drawW;
+                const y = landscapeY(x);
+                if (px === 0) ctx.moveTo(padX + px, y);
+                else ctx.lineTo(padX + px, y);
+            }
+            ctx.lineTo(padX + drawW, H * LANDSCAPE_BOTTOM + 30);
+            ctx.lineTo(padX, H * LANDSCAPE_BOTTOM + 30);
+            ctx.closePath();
+
+            const grad = ctx.createLinearGradient(0, H * LANDSCAPE_TOP, 0, H * LANDSCAPE_BOTTOM + 30);
+            grad.addColorStop(0, 'rgba(255,255,255,0.06)');
+            grad.addColorStop(1, 'rgba(255,255,255,0.01)');
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // Curve stroke
+            ctx.beginPath();
+            for (let px = 0; px <= drawW; px++) {
+                const x = px / drawW;
+                const y = landscapeY(x);
+                if (px === 0) ctx.moveTo(padX + px, y);
+                else ctx.lineTo(padX + px, y);
+            }
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Color the valleys
+            // Belief valley region (left half)
+            ctx.beginPath();
+            for (let px = 0; px <= Math.round(drawW * 0.5); px++) {
+                const x = px / drawW;
+                const y = landscapeY(x);
+                if (px === 0) ctx.moveTo(padX + px, y);
+                else ctx.lineTo(padX + px, y);
+            }
+            ctx.lineTo(padX + drawW * 0.5, H * LANDSCAPE_BOTTOM + 30);
+            ctx.lineTo(padX, H * LANDSCAPE_BOTTOM + 30);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(63, 185, 80, 0.04)';
+            ctx.fill();
+
+            // Doubt valley region (right half)
+            ctx.beginPath();
+            let started = false;
+            for (let px = Math.round(drawW * 0.5); px <= drawW; px++) {
+                const x = px / drawW;
+                const y = landscapeY(x);
+                if (!started) { ctx.moveTo(padX + px, y); started = true; }
+                else ctx.lineTo(padX + px, y);
+            }
+            ctx.lineTo(padX + drawW, H * LANDSCAPE_BOTTOM + 30);
+            ctx.lineTo(padX + drawW * 0.5, H * LANDSCAPE_BOTTOM + 30);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(248, 81, 73, 0.04)';
+            ctx.fill();
+
+            // Labels
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+
+            const beliefValleyY = landscapeY(leftCenter());
+            ctx.fillStyle = 'rgba(63, 185, 80, 0.7)';
+            ctx.fillText(leftName(), padX + leftCenter() * drawW, beliefValleyY + 20);
+
+            const doubtValleyY = landscapeY(rightCenter());
+            ctx.fillStyle = 'rgba(248, 81, 73, 0.7)';
+            ctx.fillText(rightName(), padX + rightCenter() * drawW, doubtValleyY + 20);
+
+            function drawReturnArrows(center, y, color) {
+                const cx = padX + center * drawW;
+                ctx.save();
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.globalAlpha = 0.62;
+                ctx.lineWidth = 1.5;
+                const arrowY = y - 14;
+                const head = 6;
+                ctx.beginPath();
+                ctx.moveTo(cx - 46, arrowY);
+                ctx.lineTo(cx - 13, arrowY);
+                ctx.moveTo(cx - 13, arrowY);
+                ctx.lineTo(cx - 13 - head, arrowY - head * 0.6);
+                ctx.moveTo(cx - 13, arrowY);
+                ctx.lineTo(cx - 13 - head, arrowY + head * 0.6);
+                ctx.moveTo(cx + 46, arrowY);
+                ctx.lineTo(cx + 13, arrowY);
+                ctx.moveTo(cx + 13, arrowY);
+                ctx.lineTo(cx + 13 + head, arrowY - head * 0.6);
+                ctx.moveTo(cx + 13, arrowY);
+                ctx.lineTo(cx + 13 + head, arrowY + head * 0.6);
+                ctx.stroke();
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('stable: slopes return', cx, arrowY - 8);
+                ctx.restore();
+            }
+
+            drawReturnArrows(leftCenter(), beliefValleyY, 'rgba(63, 185, 80, 0.85)');
+            drawReturnArrows(rightCenter(), doubtValleyY, 'rgba(248, 81, 73, 0.85)');
+
+            if (Math.abs(evidenceMemory) > 0.08) {
+                const updatedX = padX + (marblePos < RIDGE_X ? leftCenter() : rightCenter()) * drawW;
+                const updatedY = landscapeY(marblePos < RIDGE_X ? leftCenter() : rightCenter());
+                ctx.setLineDash([2, 3]);
+                ctx.beginPath();
+                ctx.moveTo(updatedX, updatedY - 18);
+                ctx.lineTo(updatedX, updatedY + 8);
+                ctx.strokeStyle = 'rgba(240, 136, 62, 0.55)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = 'rgba(240, 136, 62, 0.8)';
+                ctx.font = '10px sans-serif';
+                ctx.fillText('updated floor', updatedX, updatedY - 22);
+            }
+
+            // Ridge label
+            ctx.font = '10px sans-serif';
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.6)';
+            const ridgeY = landscapeY(0.5);
+            ctx.fillText('flat ridge: unstable', padX + 0.5 * drawW, ridgeY - 10);
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            ctx.moveTo(padX + 0.5 * drawW, ridgeY - 6);
+            ctx.lineTo(padX + 0.5 * drawW, ridgeY + 8);
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const slowX1 = padX + SLOW_ZONE_MIN * drawW;
+            const slowX2 = padX + SLOW_ZONE_MAX * drawW;
+            const slowY = ridgeY - 36;
+            ctx.fillStyle = 'rgba(240, 136, 62, 0.08)';
+            ctx.fillRect(slowX1, slowY, slowX2 - slowX1, 24);
+            ctx.strokeStyle = 'rgba(240, 136, 62, 0.35)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(slowX1, slowY, slowX2 - slowX1, 24);
+            ctx.fillStyle = 'rgba(240, 136, 62, 0.75)';
+            ctx.font = '10px sans-serif';
+            ctx.fillText('weak pull: easy to tip', (slowX1 + slowX2) / 2, slowY + 15);
+        }
+
+        function drawTrail() {
+            if (trailHistory.length < 2) return;
+            const padX = 30;
+            const drawW = W - padX * 2;
+
+            for (let i = 1; i < trailHistory.length; i++) {
+                const age = (trailHistory.length - i) / trailHistory.length;
+                const alpha = 0.35 * (1 - age);
+                const pt = trailHistory[i];
+                const prev = trailHistory[i - 1];
+
+                const x1 = padX + prev * drawW;
+                const y1 = landscapeY(prev) + 10;
+                const x2 = padX + pt * drawW;
+                const y2 = landscapeY(pt) + 10;
+
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = `rgba(242, 204, 96, ${alpha})`;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        }
+
+        function drawMarble() {
+            const padX = 30;
+            const drawW = W - padX * 2;
+            const mx = padX + marblePos * drawW;
+            const my = landscapeY(marblePos) + 10;
+
+            // Glow
+            const grad = ctx.createRadialGradient(mx, my, 2, mx, my, 25);
+            grad.addColorStop(0, 'rgba(242, 204, 96, 0.4)');
+            grad.addColorStop(1, 'rgba(242, 204, 96, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(mx, my, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Marble
+            ctx.beginPath();
+            ctx.arc(mx, my, 9, 0, Math.PI * 2);
+            ctx.fillStyle = '#f2cc60';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        }
+
+        function drawParticles() {
+            const padX = 30;
+            const drawW = W - padX * 2;
+
+            particles.forEach(p => {
+                const px = padX + p.x * drawW;
+                const alpha = Math.max(0, 1 - p.age / p.maxAge);
+                ctx.beginPath();
+                ctx.arc(px, p.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = p.isCounter
+                    ? `rgba(248, 81, 73, ${alpha * 0.7})`
+                    : `rgba(63, 185, 80, ${alpha * 0.7})`;
+                ctx.fill();
+            });
+        }
+
+        function drawStatus() {
+            // Status panel at bottom of canvas
+            const y = H * 0.80;
+
+            // Current basin
+            const isInBelief = marblePos < 0.5;
+            const basinLabel = isInBelief ? leftName().toUpperCase() : rightName().toUpperCase();
+            const basinColor = isInBelief ? 'rgba(63, 185, 80, 0.9)' : 'rgba(248, 81, 73, 0.9)';
+
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = basinColor;
+            ctx.fillText(`Current State: ${basinLabel}`, W / 2, y);
+
+            // Slope indicator
+            const slope = energyGradient(marblePos);
+            const slopeDesc = Math.abs(slope) < 0.3 && Math.abs(evidenceMemory) > 0.08 ? 'New valley floor: belief has updated'
+                : Math.abs(slope) < 0.3 ? 'Valley floor: feels settled'
+                : Math.abs(slope) < 1.0 ? 'On the slope: confidence is shifting'
+                : 'Near the ridge: tipping point';
+            ctx.font = '11px sans-serif';
+            ctx.fillStyle = '#8b949e';
+            ctx.fillText(slopeDesc, W / 2, y + 20);
+
+            // Transition counter
+            if (transitionCount > 0) {
+                ctx.font = '10px sans-serif';
+                ctx.fillStyle = '#58a6ff';
+                ctx.fillText(`Phase transitions: ${transitionCount}`, W / 2, y + 40);
+            }
+        }
+
+        // Physics
+        function updateMarble() {
+            // Gravity pulls marble toward valley floor (energy maxima = visual valleys)
+            const grad = energyGradient(marblePos);
+            marbleVel += grad * GRAVITY * 8;
+
+            // Add ambient noise
+            if (noiseLevel > 0) {
+                marbleVel += (Math.random() - 0.5) * noiseLevel * 0.0008;
+            }
+
+            marbleVel *= FRICTION;
+            marblePos += marbleVel;
+
+            // Boundaries
+            if (marblePos < 0.02) { marblePos = 0.02; marbleVel *= -0.3; }
+            if (marblePos > 0.98) { marblePos = 0.98; marbleVel *= -0.3; }
+
+            // Track trail
+            trailHistory.push(marblePos);
+            if (trailHistory.length > MAX_TRAIL) trailHistory.shift();
+
+            // Detect basin transitions
+            const newBasin = marblePos < RIDGE_X ? 'belief' : 'doubt';
+            if (newBasin !== currentBasin) {
+                currentBasin = newBasin;
+                transitionCount++;
+                if (transitionCount === 1) {
+                    showToast('first_transition', 'Phase transition! The marble crossed the ridge. The process was gradual — the snap was sudden.');
+                } else if (transitionCount === 2) {
+                    showToast('second_transition', 'Another transition. Notice: the crossing always feels abrupt, even though each nudge was tiny.');
+                }
+            }
+            updateReadouts();
+        }
+
+        // Evidence nudge
+        function addEvidence(isCounter) {
+            const nearRidge = marblePos > SLOW_ZONE_MIN && marblePos < SLOW_ZONE_MAX;
+            const strength = evidenceStrength * (nearRidge ? 0.00065 : 0.0018);
+            const direction = isCounter ? 1 : -1; // Counter pushes right (toward doubt), supporting pushes left (toward belief)
+
+            evidenceMemory = clamp(evidenceMemory + direction * evidenceStrength * 0.014, -1, 1);
+            marbleVel += direction * strength;
+
+            // Spawn visual particle
+            const padX = 30;
+            const drawW = W - padX * 2;
+            const mx = marblePos;
+
+            for (let i = 0; i < 3; i++) {
+                particles.push({
+                    x: mx + (Math.random() - 0.5) * 0.03,
+                    y: landscapeY(mx) + 10 + Math.random() * 20,
+                    vy: 0.5 + Math.random(),
+                    age: 0,
+                    maxAge: 40 + Math.random() * 30,
+                    isCounter: isCounter,
+                });
+            }
+        }
+
+        function updateParticles() {
+            particles = particles.filter(p => {
+                p.age++;
+                p.y += p.vy;
+                p.vy *= 0.97;
+                return p.age < p.maxAge;
+            });
+        }
+
+        // Streaming
+        let streamInterval = null;
+
+        function toggleStream() {
+            const btn = document.getElementById('stream-btn');
+            if (isStreaming) {
+                isStreaming = false;
+                btn.classList.remove('active');
+                btn.innerText = 'Stream Counter';
+                if (streamInterval) { clearInterval(streamInterval); streamInterval = null; }
+            } else {
+                isStreaming = true;
+                btn.classList.add('active');
+                btn.innerText = 'Stop';
+                // Stream counter-evidence (pushes toward doubt)
+                streamInterval = setInterval(() => {
+                    addEvidence(true);
+                }, 160);
+                showToast('stream', 'Streaming counter-evidence. It slows near the ridge so the continuous climb is visible before the snap.');
+            }
+        }
+
+        // Render loop
+        function render() {
+            ctx.fillStyle = '#0a0a0c';
+            ctx.fillRect(0, 0, W, H);
+
+            drawLandscape();
+            drawTrail();
+            drawParticles();
+            drawMarble();
+            drawStatus();
+
+            updateMarble();
+            updateParticles();
+
+            requestAnimationFrame(render);
+        }
+
+        // Event listeners
+        document.getElementById('nudge-doubt-btn').addEventListener('click', () => {
+            for (let i = 0; i < 5; i++) addEvidence(true);
+        });
+
+        document.getElementById('nudge-belief-btn').addEventListener('click', () => {
+            for (let i = 0; i < 5; i++) addEvidence(false);
+        });
+
+        document.getElementById('stream-btn').addEventListener('click', toggleStream);
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            resetSimulation(true);
+        });
+
+        document.getElementById('strengthSlider').addEventListener('input', (e) => {
+            evidenceStrength = parseInt(e.target.value);
+            document.getElementById('strength-val').innerText = strengthLabels[evidenceStrength - 1];
+        });
+
+        document.getElementById('noiseSlider').addEventListener('input', (e) => {
+            noiseLevel = parseInt(e.target.value);
+            document.getElementById('noise-val').innerText = noiseLabels[noiseLevel];
+        });
+
+        window.driftDiffusionDemo = {
+            addCounterEvidence: () => addEvidence(true),
+            addSupportingEvidence: () => addEvidence(false),
+            getState: () => ({
+                marblePos,
+                evidenceMemory,
+                leftCenter: leftCenter(),
+                rightCenter: rightCenter(),
+                currentBasin,
+            }),
+            reset: () => resetSimulation(false),
+        };
+
+        updateReadouts();
+        render();
+    })();
+    </script>
+</body>
+</html>

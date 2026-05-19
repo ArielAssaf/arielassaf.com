@@ -6,8 +6,6 @@ date: 2026-04-11T00:00:00Z
 draft: false
 ---
 
-*This is the first essay in the series. The next essay is [The Shape That Belief and Credence Share](/posts/the-shape-that-belief-and-credence-share/).*
-
 ## Introduction: The physical address of a thought
 
 This whole project started with a book about memory.
@@ -364,3 +362,6 @@ The geometry, I think, is the right place to start.
 [^churchland-clark]: For Churchland's state-space account of concepts, see Paul M. Churchland, *A Neurocomputational Perspective: The Nature of Mind and the Structure of Science* (1989), and *Plato's Camera: How the Physical Brain Captures a Landscape of Abstract Universals* (2012). For predictive processing, see Andy Clark, ["Whatever next? Predictive brains, situated agents, and the future of cognitive science"](https://doi.org/10.1017/S0140525X12000477) (2013), doi: [10.1017/S0140525X12000477](https://doi.org/10.1017/S0140525X12000477), and *Surfing Uncertainty: Prediction, Action, and the Embodied Mind* (2016).
 
 [^sorites-vagueness]: For the Sorites paradox and major approaches to vagueness, including degree-theoretic approaches, see Dominic Hyde and Diana Raffman, ["Sorites Paradox"](https://plato.stanford.edu/entries/sorites-paradox/) in the *Stanford Encyclopedia of Philosophy*, and Roy Sorensen, ["Vagueness"](https://plato.stanford.edu/entries/vagueness/) in the *Stanford Encyclopedia of Philosophy*.
+
+
+*Next in the series: [The Shape That Belief and Credence Share](/posts/the-shape-that-belief-and-credence-share/).*

@@ -4,7 +4,7 @@ date: 2026-03-26T00:00:00Z
 draft: false
 ---
 
-*This essay follows [The Geometry of Meaning](/posts/the-geometry-of-meaning/).*
+*Previous in the series: [The Geometry of Meaning](/posts/the-geometry-of-meaning/).*
 
 ## The Wrong Frame
 
@@ -218,3 +218,6 @@ That is where the next chapter goes: into moral judgment, where the same archite
 [^c2-hysteresis]: For the canonical demonstration of behavioral hysteresis in category transitions, see Tuller, Case, Ding, and Kelso, "The Nonlinear Dynamics of Speech Categorization," *Journal of Experimental Psychology: Human Perception and Performance* 20, no. 1 (1994). For neural-population signatures during morphed-stimulus paradigms in object-recognition cortex, see Akrami, Liu, Treves, and Jagadeesh, "Converging Neuronal Activity in Inferior Temporal Cortex during the Classification of Morphed Stimuli," *Cerebral Cortex* 19, no. 4 (2009); McKee, Riesenhuber, Miller, and Freedman, "Task Dependence of Visual and Category Representations in Prefrontal and Inferior Temporal Cortices," *Journal of Neuroscience* 34, no. 48 (2014). For direction-dependent effects under bistable perception, see Engel, Fries, and Singer, "Dynamic Predictions: Oscillations and Synchrony in Top-Down Processing," *Nature Reviews Neuroscience* 2 (2001), and the broader literature on perceptual bistability and history effects.
 
 [^c2-pouget]: See Ma, Beck, Latham, and Pouget, "Bayesian Inference with Probabilistic Population Codes," *Nature Neuroscience* 9 (2006); Pouget, Beck, Ma, and Latham, "Probabilistic Brains," *Nature Neuroscience* 16 (2013).
+
+
+*Next in the series: [The Slopes of Approval](/posts/the-slopes-of-approval/).*

@@ -4,7 +4,7 @@ date: 2026-05-06T13:00:00Z
 draft: false
 ---
 
-*This essay follows [The Slopes of Approval](/posts/the-slopes-of-approval/).*
+*Previous in the series: [The Slopes of Approval](/posts/the-slopes-of-approval/).*
 
 ## What the Pattern Is
 

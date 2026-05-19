@@ -4,7 +4,7 @@ date: 2026-05-06T12:00:00Z
 draft: false
 ---
 
-*This essay follows [The Shape That Belief and Credence Share](/posts/the-shape-that-belief-and-credence-share/).*
+*Previous in the series: [The Shape That Belief and Credence Share](/posts/the-shape-that-belief-and-credence-share/).*
 
 ## OK, so what should I do?
 
@@ -263,3 +263,5 @@ We've been navigating these basins all our lives. It's worth knowing what they a
 [^rich-wallis]: Erin L. Rich and Jonathan D. Wallis, "Decoding Subjective Decisions from Orbitofrontal Cortex," *Nature Neuroscience* 19, no. 7 (2016): 973â€“980.
 
 [^hunt-2012]: Laurence T. Hunt, Nils Kolling, Alireza Soltani, Mark W. Woolrich, Matthew F. S. Rushworth, and Timothy E. J. Behrens, "Mechanisms Underlying Cortical Activity during Value-Guided Choice," *Nature Neuroscience* 15, no. 3 (2012): 470â€“476.
+
+*Next in the series: [The Attractor Hypothesis](/posts/the-attractor-hypothesis/).*

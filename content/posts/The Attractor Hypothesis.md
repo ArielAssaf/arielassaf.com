@@ -6,6 +6,8 @@ draft: false
 
 *Previous in the series: [The Slopes of Approval](/posts/the-slopes-of-approval/).*
 
+*Next in the series: [The Opacity of the Obvious](/posts/the-opacity-of-the-obvious/).*
+
 ## What the Pattern Is
 
 Three chapters in, the same shape kept appearing. The chapter on concepts described basins of attraction in a learned representational landscape: sloped sides, fuzzy edges, deeper for prototypes. The chapter on belief recovered the same geometry under a different label. Continuous credences that feel categorical when the system settles. Hysteresis around interpretive switches. Paths into a state mattering for how easily you can leave it. The chapter on moral sentiment did it again. Approval and disapproval as basins. Dilemmas as saddle points where two basins compete. The systematizing impulse of normative theory pushing against terrain that won't hold neat partitions.

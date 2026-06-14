@@ -3,6 +3,9 @@ title: "The Opacity of the Obvious"
 date: 2026-06-14T19:00:00Z
 draft: false
 ---
+
+*Previous in the series: [The Attractor Hypothesis](/posts/the-attractor-hypothesis/).*
+
 **PART I — THE DISTURBANCE**
 
 ## Obviousness Arrives and Erases Its Own History

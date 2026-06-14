@@ -165,7 +165,7 @@ These thinkers aren't saying the same thing. The skeptic doubts the senses; Sell
 
 **PART IV — PAYOFF**
 
-## The Given Was the Result
+## The given was the result
 
 The basins aren't a film over thinking that we might learn to wipe away. They are cognition. The opacity here is one reason intelligence works at all. A creature that had to verify the origin of each category before using one wouldn't get through breakfast.
 

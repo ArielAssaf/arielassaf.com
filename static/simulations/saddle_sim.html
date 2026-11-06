@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A saddle: one pass, two directions</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#253032;background:#f7f7f3;font-synthesis:none}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:34px 28px 26px}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#707976}h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(30px,4vw,46px);letter-spacing:-1.5px;margin:10px 0}p{line-height:1.6;margin:8px 0;color:#596360}.intro{max-width:770px;font-size:16px}.stage{position:relative;margin-top:24px;border:1px solid #dddfd8;border-radius:16px;background:linear-gradient(#fff,#eeefea);overflow:hidden}#landscape{display:block;width:100%;height:420px;touch-action:pan-y;cursor:grab}.legend{position:absolute;top:18px;left:20px;display:flex;gap:18px;font-size:12px;pointer-events:none}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}.teal{background:#247d7d}.gold{background:#b17821}.red{background:#cf2e32}.hint{position:absolute;bottom:12px;right:18px;font-size:11px;color:#75807b;pointer-events:none}.toolbar{display:flex;gap:10px;flex-wrap:wrap;padding:16px 20px;border-top:1px solid #dddfd8;align-items:center}button{font:inherit;font-size:13px;border:1px solid #ccd0c7;border-radius:7px;background:#fff;color:#253032;padding:10px 14px;cursor:pointer;min-height:42px}button:hover{background:#eef0e9}button:focus-visible,input:focus-visible{outline:3px solid #679b9b;outline-offset:3px}button[data-action="left"],button[data-action="right"]{border-color:#9fbfba;color:#1b6464}button[data-action="ridge"]{border-color:#cdb994;color:#8b5e19}.rotate{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;color:#65716a}input{width:130px;accent-color:#587b73}.status{min-height:54px;padding:0 20px 15px;font-size:14px;line-height:1.55;color:#4d5954}.sections{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.section{background:#fff;border:1px solid #dddfd8;border-radius:12px;padding:18px 20px 14px}.section h2{font-size:14px;margin:0;font-weight:650}.section p{font-size:13px;margin:7px 0 0}.section canvas{height:120px;width:100%;display:block}.footer{font-size:11px;margin-top:16px;color:#7a817b}.section:first-child h2{color:#247d7d}.section:last-child h2{color:#a16d20}@media(max-width:650px){main{padding:22px 14px}.sections{grid-template-columns:1fr}#landscape{height:350px}.legend{gap:12px;font-size:10px;left:14px}.toolbar{padding:14px;gap:8px}button{font-size:12px;padding:9px 10px}.rotate{margin-left:0;width:100%}.rotate input{flex:1}.status{padding:0 14px 14px}.intro{font-size:14px}.hint{font-size:10px}}
+</style>
+<main>
+<div class="eyebrow">The geometry of a saddle</div>
+<h1>One pass. Two directions.</h1>
+<p class="intro">The ground rises on either side <strong>along the ridge</strong>, but falls away <strong>toward the valleys</strong>. Nudge the marble in each direction to see why the pass is unstable.</p>
+<div class="stage">
+<div class="legend"><span><i class="dot teal"></i>Toward the valleys</span><span><i class="dot gold"></i>Along the ridge</span><span><i class="dot red"></i>Marble</span></div>
+<canvas id="landscape" role="img" aria-label="Rotatable three-dimensional wireframe of two valleys separated by a saddle. A teal path descends from the saddle into both valleys; a gold path rises along the ridge."></canvas>
+<div class="hint">Drag to rotate · or use the view slider</div>
+<div class="toolbar">
+<button data-action="left">Nudge toward valley A</button><button data-action="right">Nudge toward valley B</button><button data-action="ridge">Displace along the ridge</button><button data-action="reset">Reset to pass</button>
+<label class="rotate">View <input id="angle" type="range" min="-80" max="80" value="-32" aria-label="Rotate the landscape"></label>
+</div>
+<div class="status" id="status" role="status" aria-live="polite">At the pass: the slope is zero. An exactly balanced marble stays here until disturbed.</div>
+</div>
+<div class="sections">
+<section class="section"><h2>Across the pass → toward the valleys</h2><canvas id="valley" role="img" aria-label="Cross-section showing a central high point between two valley bottoms."></canvas><p>The pass is a high point on this route. A small displacement to either side grows as the marble moves downhill.</p></section>
+<section class="section"><h2>Along the ridge → toward higher ground</h2><canvas id="ridge" role="img" aria-label="Cross-section showing the pass at the bottom of a rising curve along the ridge."></canvas><p>The pass is a low point on this route. Displace the marble along the ridge and it returns to the pass.</p></section>
+</div>
+<p class="footer">An idealized landscape with two attractors. Motion follows the downhill gradient with damping; the marble is a visual metaphor. The colored curves are two perpendicular slices through the same pass.</p>
+</main>
+<script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id),canvas=$('landscape'),ctx=canvas.getContext('2d'),status=$('status'),slider=$('angle');
+const teal='#247d7d',gold='#b17821';
+let angle=-32*Math.PI/180,ball={x:0,y:0},trail=[],running=false,last=0,frame=0,width=0,height=0,drag=null;
+const energy=(x,y)=>(x*x-1)**2+0.65*y*y;
+const slope=(x,y)=>[4*x*(x*x-1),1.3*y];
+function setup(c){const r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=Math.round(r.width*d);c.height=Math.round(r.height*d);const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);return [r.width,r.height,g]}
+function project(x,y,z=energy(x,y)){const scale=Math.min(width/4.7,height/3.7),u=x*Math.cos(angle)-y*Math.sin(angle),v=x*Math.sin(angle)+y*Math.cos(angle);return [width/2+u*scale,height*.70+v*.53*scale-z*.70*scale,v+z*.10]}
+function path(points,color,lineWidth=2,dash=[]){ctx.beginPath();points.forEach((p,i)=>{const q=project(...p);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.setLineDash(dash);ctx.stroke();ctx.setLineDash([])}
+function label(text,x,y,z,color='#56635b',dy=0){const p=project(x,y,z);ctx.font='12px system-ui';const tw=ctx.measureText(text).width;ctx.fillStyle='rgba(255,255,252,.92)';ctx.beginPath();ctx.roundRect(p[0]-tw/2-7,p[1]-10+dy,tw+14,22,5);ctx.fill();ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(text,p[0],p[1]+5+dy)}
+function marble(x,y,r=9){const p=project(x,y);ctx.fillStyle='rgba(65,28,20,.20)';ctx.beginPath();ctx.ellipse(p[0]+2,p[1]+3,r*1.2,r*.48,0,0,Math.PI*2);ctx.fill();const g=ctx.createRadialGradient(p[0]-r*.3,p[1]-r*.7,0,p[0],p[1]-r*.6,r*1.4);g.addColorStop(0,'#ff8a80');g.addColorStop(.35,'#e33e40');g.addColorStop(1,'#a91924');ctx.fillStyle=g;ctx.beginPath();ctx.arc(p[0],p[1]-r*.8,r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a0262c';ctx.lineWidth=.7;ctx.stroke()}
+function draw(){ctx.clearRect(0,0,width,height);const faces=[],nx=64,ny=44,x0=-1.4,y0=-1.1,dx=2.8/nx,dy=2.2/ny;
+for(let i=0;i<nx;i++)for(let j=0;j<ny;j++){const x=x0+i*dx,y=y0+j*dy,p=[[x,y],[x+dx,y],[x+dx,y+dy],[x,y+dy]].map(v=>project(...v)),s=slope(x+dx/2,y+dy/2);const shade=Math.round(224+18*(1-.16*s[0]+.28*s[1])/Math.sqrt(1+s[0]**2+s[1]**2));faces.push({p,depth:p.reduce((a,b)=>a+b[2],0)/4,shade})}
+faces.sort((a,b)=>a.depth-b.depth);for(const f of faces){ctx.beginPath();f.p.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=`rgb(${f.shade},${f.shade+2},${f.shade})`;ctx.fill();ctx.strokeStyle='rgba(92,107,99,.25)';ctx.lineWidth=.48;ctx.stroke()}
+const a=[],b=[];for(let i=0;i<=150;i++){a.push([-1.38+i*2.76/150,0]);b.push([0,-1.05+i*2.1/150])}path(a,teal,2.8);path(b,gold,2.8);
+for(const x of [-1,1]){const p=project(x,0);ctx.strokeStyle=teal;ctx.lineWidth=1.7;ctx.beginPath();ctx.ellipse(p[0],p[1],13,5,0,0,Math.PI*2);ctx.stroke()}
+if(trail.length>1)path(trail,'rgba(198,47,49,.6)',2,[3,4]);
+label('Valley A',-1,0,0,teal,27);label('Valley B',1,0,0,teal,27);label('Pass · saddle',0,0,1,'#394c43',-34);label('Ridge rises',0,1,energy(0,1),gold,-22);
+marble(ball.x,ball.y);drawSlice($('valley'),'x');drawSlice($('ridge'),'y');
+}
+function drawSlice(c,axis){const [w,h,g]=setup(c),xaxis=axis==='x',range=xaxis?1.45:1.05,min=xaxis?0:1,max=xaxis?1.4:1.8,lo=26,hi=w-26,top=16,bottom=h-20;const px=v=>lo+(v+range)/(2*range)*(hi-lo),py=v=>bottom-(v-min)/(max-min)*(bottom-top);g.clearRect(0,0,w,h);g.strokeStyle='#e3e7df';g.lineWidth=1;g.beginPath();g.moveTo(lo,bottom);g.lineTo(hi,bottom);g.moveTo(w/2,top);g.lineTo(w/2,bottom);g.stroke();g.beginPath();for(let i=0;i<=120;i++){let v=-range+2*range*i/120,z=xaxis?energy(v,0):energy(0,v);i?g.lineTo(px(v),py(z)):g.moveTo(px(v),py(z))}g.strokeStyle=xaxis?teal:gold;g.lineWidth=2.5;g.stroke();const pos=xaxis?ball.x:ball.y,z=xaxis?energy(pos,0):energy(0,pos);if(xaxis?Math.abs(ball.y)<.001:Math.abs(ball.x)<.001){g.fillStyle='#cf2e32';g.beginPath();g.arc(px(pos),py(z),5,0,Math.PI*2);g.fill();}g.fillStyle='#747e77';g.font='10px system-ui';g.textAlign='center';g.fillText('pass',w/2,h-3);if(xaxis){g.fillText('A',px(-1),h-3);g.fillText('B',px(1),h-3)}}
+function resize(){[width,height]=setup(canvas);draw()}
+function stop(){running=false;cancelAnimationFrame(frame)}
+function tick(now){if(!running)return;const dt=Math.min((now-last)/1000,.04);last=now;const s=slope(ball.x,ball.y);ball.x-=.8*s[0]*dt;ball.y-=.8*s[1]*dt;trail.push([ball.x,ball.y]);if(trail.length>350)trail.shift();if(Math.hypot(...s)<.002){running=false;if(Math.abs(ball.x)>.9){ball.x=Math.sign(ball.x);ball.y=0;status.textContent=`Settled in valley ${ball.x<0?'A':'B'}: nearby states move toward this attractor.`}else{ball={x:0,y:0};status.textContent='Back at the pass. The ridge direction restores balance; the valley direction remains unstable.'}}draw();if(running)frame=requestAnimationFrame(tick)}
+document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',()=>{stop();trail=[];ball={x:0,y:0};const a=b.dataset.action;if(a==='reset'){status.textContent='At the pass: the slope is zero. An exactly balanced marble stays here until disturbed.';draw();return}if(a==='ridge'){ball.y=.85;status.textContent='Displaced along the ridge: the marble moves downhill back toward the pass.'}else{ball.x=a==='left'?-.065:.065;status.textContent=`Nudged toward valley ${ball.x<0?'A':'B'}: the displacement grows as the marble moves downhill.`}trail=[[ball.x,ball.y]];running=true;last=performance.now();frame=requestAnimationFrame(tick)}));
+slider.addEventListener('input',()=>{angle=Number(slider.value)*Math.PI/180;draw()});canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,angle};canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing'});canvas.addEventListener('pointermove',e=>{if(!drag)return;const deg=Math.max(-80,Math.min(80,(drag.angle+(e.clientX-drag.x)*.005)*180/Math.PI));angle=deg*Math.PI/180;slider.value=deg;draw()});function release(){drag=null;canvas.style.cursor='grab'}canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);new ResizeObserver(resize).observe(canvas);resize();
+})();
+</script>
+</html>

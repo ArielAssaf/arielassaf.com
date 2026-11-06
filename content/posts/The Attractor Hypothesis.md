@@ -2,6 +2,7 @@
 title: "The Attractor Hypothesis"
 date: 2026-05-06T13:00:00Z
 draft: false
+narration: /audio/essay-04-the-attractor-hypothesis.mp3
 ---
 
 *Previous in the series: [The Slopes of Approval](/posts/the-slopes-of-approval/).*
@@ -98,7 +99,7 @@ The clean symbolic story overstates what people do, though, and the gap has alwa
 
 Try this before reading on. Below are four cards and a rule, and you can see only one side of each card. Pick the cards you'd need to turn over to find out whether the rule is broken. Start with the version marked *Abstract*, and leave the other one for a moment.
 
-***** insert "C:\Users\ariel\Desktop\Neural epystemology\four-card-problem.html" html *****
+{{< simulation src="/simulations/four-card-problem.html" title="Four-card reasoning experiment" height="700" >}}
 
 If you picked the E, or the E and the 4, you're in good company. When the psychologist Peter Wason set versions of this puzzle in the 1960s, fewer than one in ten people got it right, and that has held up in the decades since.[^c4-wason] The answer is the E and the 7. The E has to be checked, because an odd number on its back would break the rule. The 7 has to be checked too, because a vowel on its back would break the rule just as surely. The 4 can't break it whatever is on the other side, because the rule says nothing about what sits behind an even number.
 

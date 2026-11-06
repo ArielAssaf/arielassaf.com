@@ -27,6 +27,15 @@
       {{- partial "post_canonical.html" . -}}
     </div>
     {{- end }}
+    {{- with .Params.narration }}
+    <section class="post-audio" aria-label="Audio version">
+      <p class="post-audio-label" id="post-audio-label">Listen to this essay</p>
+      <audio controls preload="metadata" aria-labelledby="post-audio-label">
+        <source src="{{ . | relURL }}" type="audio/mpeg">
+        Your browser does not support audio playback.
+      </audio>
+    </section>
+    {{- end }}
   </header>
   {{- $isHidden := (.Param "cover.hiddenInSingle") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" true "isHidden" $isHidden) }}

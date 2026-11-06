@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>The Four-Card Problem</title>
+<style>
+  :root{--ink:#24243a;--muted:#68677b;--paper:#f5f1eb;--white:#fffdfa;--line:#e3dcd3;--accent:#6154a3;--accent-soft:#eeeafd;--coral:#df806a;--gold:#e9bd61;--shadow:0 16px 38px #392e4412}
+  *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:900px;margin:auto;padding:48px 24px 64px}.eyebrow{font-size:.75rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+  h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.3rem,6vw,4.4rem);line-height:.98;letter-spacing:-.04em;margin:12px 0 18px;max-width:650px}
+  .intro{max-width:650px;color:var(--muted);font-size:1.07rem}.panel{background:var(--white);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:clamp(20px,4vw,36px);margin-top:28px}
+  .switch{display:flex;gap:6px;padding:5px;background:#f0ece7;border-radius:999px;width:max-content;margin-bottom:25px}.switch button{border:0;border-radius:999px;background:transparent;color:var(--muted);padding:9px 15px;font:inherit;font-size:.88rem;font-weight:750;cursor:pointer}.switch button[aria-pressed="true"]{background:var(--white);color:var(--accent);box-shadow:0 2px 7px #24243a12}
+  .rule-label{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:var(--muted)}.rule{font-family:Georgia,serif;font-size:clamp(1.25rem,3.5vw,1.8rem);margin:8px 0 0}.rule strong{color:var(--accent)}
+  .prompt{margin:26px 0 12px;font-weight:700}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{appearance:none;border:1px solid var(--line);background:#fff;border-radius:16px;min-height:148px;padding:14px;cursor:pointer;color:var(--ink);position:relative;transition:transform .16s,border-color .16s,box-shadow .16s;box-shadow:0 5px 0 #e9e3dc}
+  .card:hover{transform:translateY(-3px)}.card:focus-visible,button:focus-visible{outline:3px solid #9186cb;outline-offset:3px}.card.selected{border:2px solid var(--accent);background:#f7f5ff;box-shadow:0 5px 0 #ddd8f2}.face{font-family:Georgia,serif;font-size:3.1rem;font-weight:700;line-height:1}.card[data-kind="word"] .face{font-family:inherit;font-size:1.3rem;line-height:1.15}.pick{position:absolute;right:12px;top:10px;color:var(--accent);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.back{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;color:var(--accent);font-size:.85rem;font-weight:700}.card.flipped .back{display:block}
+  .actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px}.primary,.secondary{border:0;border-radius:999px;padding:12px 19px;font:inherit;font-weight:700;font-size:.95rem;cursor:pointer}.primary{background:var(--accent);color:white}.primary:hover{background:#4e438d}.secondary{background:transparent;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+  .result{display:none;border-radius:16px;padding:15px 18px;margin-top:20px;background:var(--accent-soft);border-left:4px solid var(--accent)}.result.show{display:block}.result h2{font:700 1.15rem Georgia,serif;margin:0}.result p{margin:4px 0 0;color:#514f65}
+  @media(max-width:600px){main{padding:32px 17px 48px}.cards{gap:9px}.card{min-height:130px;padding:11px 7px}.face{font-size:2.5rem}.card[data-kind="word"] .face{font-size:1rem}.pick{right:7px;top:7px;font-size:.62rem}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">A tiny logic experiment</div>
+  <h1>The four-card problem</h1>
+  <p class="intro">Four cards. One rule. You can see only one side of each card. Which cards would you turn over to find out whether the rule is broken?</p>
+  <section class="panel" aria-labelledby="rule-heading">
+    <div class="switch" role="group" aria-label="Choose a version">
+      <button type="button" data-mode="abstract" aria-pressed="true">Abstract</button>
+      <button type="button" data-mode="bar" aria-pressed="false">At the bar</button>
+    </div>
+    <div class="rule-label" id="rule-heading">The rule</div>
+    <p class="rule" id="rule"></p>
+    <p class="prompt">Select every card you need to turn over:</p>
+    <div class="cards" id="cards" role="group" aria-label="Choose cards to turn over"></div>
+    <div class="actions"><button class="primary" id="check" type="button">Check my choice</button><button class="secondary" id="reset" type="button">Reset</button></div>
+    <div class="result" id="result" aria-live="polite" tabindex="-1"><h2 id="result-title"></h2><p id="result-copy"></p></div>
+  </section>
+</main>
+<script>
+(() => {
+  const modes = {
+    abstract: {
+      rule: 'If a card has a <strong>vowel</strong> on one side, then it has an <strong>even number</strong> on the other.',
+      cards: [
+        {face:'E', back:'Back: 2', kind:'symbol'},
+        {face:'K', back:'Back: 5', kind:'symbol'},
+        {face:'4', back:'Back: D', kind:'symbol'},
+        {face:'7', back:'Back: E', kind:'symbol'}
+      ], answer:[0,3],
+      correct:'Correct — choose E and 7.',
+      incorrect:'Not quite. The cards to choose are E and 7.'
+    },
+    bar: {
+      rule: 'If someone is drinking <strong>beer</strong>, they must be <strong>18 or older</strong>.',
+      cards: [
+        {face:'Beer', back:'Back: 25', kind:'word'},
+        {face:'Soda', back:'Back: 16', kind:'word'},
+        {face:'22', back:'Back: Soda', kind:'symbol'},
+        {face:'16', back:'Back: Beer', kind:'symbol'}
+      ], answer:[0,3],
+      correct:'Correct — choose Beer and 16.',
+      incorrect:'Not quite. The cards to choose are Beer and 16.'
+    }
+  };
+  const cardsEl = document.querySelector('#cards');
+  const result = document.querySelector('#result');
+  let mode = 'abstract';
+  function render() {
+    const data = modes[mode];
+    document.querySelector('#rule').innerHTML = data.rule;
+    cardsEl.replaceChildren(...data.cards.map((card, index) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'card'; button.dataset.index = index; button.dataset.kind = card.kind;
+      button.setAttribute('aria-pressed','false'); button.setAttribute('aria-label',`${card.face} card, not selected`);
+      button.innerHTML = `<span class="pick"></span><span class="face"></span><span class="back"></span>`;
+      button.querySelector('.face').textContent = card.face;
+      button.querySelector('.back').textContent = card.back;
+      button.addEventListener('click', () => {
+        const selected = button.classList.toggle('selected');
+        button.setAttribute('aria-pressed',String(selected));
+        button.setAttribute('aria-label',`${card.face} card, ${selected ? 'selected' : 'not selected'}`);
+        button.querySelector('.pick').textContent = selected ? 'Selected' : '';
+        result.classList.remove('show');
+        cardsEl.querySelectorAll('.flipped').forEach(item => item.classList.remove('flipped'));
+      });
+      return button;
+    }));
+    document.querySelectorAll('[data-mode]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.mode === mode)));
+    result.classList.remove('show');
+  }
+  document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => { mode = button.dataset.mode; render(); }));
+  document.querySelector('#check').addEventListener('click', () => {
+    const chosen = [...cardsEl.querySelectorAll('.card.selected')].map(card => Number(card.dataset.index)).sort((a,b) => a-b);
+    const answer = [...modes[mode].answer].sort((a,b) => a-b);
+    const correct = chosen.length === answer.length && chosen.every((value,index) => value === answer[index]);
+    document.querySelector('#result-title').textContent = chosen.length ? (correct ? modes[mode].correct : modes[mode].incorrect) : 'Choose at least one card first.';
+    document.querySelector('#result-copy').textContent = chosen.length ? 'Your selected cards are turned over.' : '';
+    cardsEl.querySelectorAll('.card.selected').forEach(card => card.classList.add('flipped'));
+    result.classList.add('show'); result.focus();
+  });
+  document.querySelector('#reset').addEventListener('click', () => render());
+  render();
+})();
+</script>
+</body>
+</html>
+
+

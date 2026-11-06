@@ -2,6 +2,7 @@
 title: "The Slopes of Approval"
 date: 2026-05-06T12:00:00Z
 draft: false
+narration: /audio/essay-03-the-slopes-of-approval.mp3
 ---
 
 *Previous in the series: [When a Question Closes](/posts/when-a-question-closes/).*

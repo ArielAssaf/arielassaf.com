@@ -4,6 +4,7 @@ aliases:
   - /posts/the-shape-that-belief-and-credence-share/
 date: 2026-03-26T00:00:00Z
 draft: false
+narration: /audio/essay-02-when-a-question-closes.mp3
 ---
 
 *Previous in the series: [The Geometry of Meaning](/posts/the-geometry-of-meaning/).*

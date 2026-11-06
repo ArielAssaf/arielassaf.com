@@ -5,6 +5,7 @@
 - Theme: PaperMod (`themes/PaperMod` submodule)
 - Content source: Markdown files in `content/posts`
 - Post rendering override: `layouts/_default/single.html` (includes KaTeX auto-render for LaTeX math in posts).
+- Optional post audio is served from `static/audio` and displayed by the single-post layout when the post's `narration` frontmatter is set.
 - Math assets are self-hosted in `static/vendor/katex` with initializer script in `static/js/math-render.js`.
 - Interactive embeds: standalone HTML files in `static/simulations`, embedded from posts via `layouts/shortcodes/simulation.html`
 - Hosting/deploy: GitHub Pages via `.github/workflows/hugo.yml`

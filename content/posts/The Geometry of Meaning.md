@@ -4,6 +4,7 @@ aliases:
   - /posts/neural-fuzziness/
 date: 2026-04-11T00:00:00Z
 draft: false
+narration: /audio/essay-01-geometry-of-meaning.mp3
 ---
 
 *Next in the series: [When a Question Closes](/posts/when-a-question-closes/).*

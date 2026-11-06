@@ -1,0 +1,17 @@
+.post-audio {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.post-audio-label {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 0.9rem;
+}
+
+.post-audio audio {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+}

@@ -2,6 +2,7 @@
 title: "What convinced us"
 date: 2026-11-06T00:00:00Z
 draft: false
+narration: /audio/essay-06-what-convinced-us.mp3
 ---
 
 *Previous in the series: [The Opacity of the Obvious](/posts/the-opacity-of-the-obvious/).*

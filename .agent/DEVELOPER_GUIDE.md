@@ -3,6 +3,7 @@
 ## Local Workflow
 - Create or edit posts in `content/posts/*.md`.
 - Mark posts live with frontmatter `draft: false`.
+- For a narrated post, place its MP3 in `static/audio/` and set `narration: /audio/<file>.mp3` in the post frontmatter; the player appears below the title and metadata.
 - Math in posts:
   - Inline: `$...$` or `\(...\)`
   - Display: `$$...$$` or `\[...\]`
